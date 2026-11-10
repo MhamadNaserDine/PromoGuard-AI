@@ -1,0 +1,129 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 8 GROSS-PROFIT IMPACT — carbonated soft drinks
+==========================================================================================
+All figures are ESTIMATED GROSS-PROFIT impacts (margin on average acquisition cost),
+not net profit. Model-based counterfactuals; see Phases 5-7 for assumptions.
+
+Promotion rows with a pre-promotion cost: 99.9%
+Recorded cost during promotions / pre-promotion cost:
+count    2426983.000
+mean           0.933
+std            0.320
+min            0.000
+5%             0.407
+25%            0.826
+50%            0.985
+75%            1.000
+95%            1.321
+max           11.470
+-> Median ratio < 1 means the recorded cost usually drops during promotions (trade-deal buying);
+   ~1 means mostly unchanged.
+
+==========================================================================================
+1. POOLED GROSS-PROFIT IMPACT (all in-scope events)
+==========================================================================================
+Events: 22,469
+  Counterfactual gross profit (no promotion)      : $11.86M
+  Gross-profit lift, promoted products (pre cost) : -$56.05M
+  After-event weeks                               : $976,267
+  Cannibalized other soft drinks                  : -$1.65M
+  NET impact, pre-promotion cost                  : -$56.72M  (-478.3% vs. counterfactual)
+  NET impact, recorded cost                       : -$9.25M
+     difference = estimated trade-deal funding    : $47.47M
+
+  Revenue given away as discounts                 : $111.90M
+     of which on units that would have sold anyway: $12.44M (11.1%)
+  Gross profit per $1 of discount: pre cost -0.51 | recorded cost -0.08
+  90% bootstrap interval (events), net pre-cost: -$59.84M to -$53.73M
+
+Events that INCREASED gross profit: pre cost 19.4% | recorded cost 36.4%
+  with 90% confidence (pre cost): gain 12.5% | loss 71.6% | uncertain 16.0%
+  [figure] reports/phase8/sdr/figures/gp_waterfall.png
+
+==========================================================================================
+2. BY DISCOUNT DEPTH
+==========================================================================================
+        events       cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                       
+<5%       2752   670017.41       1069228.46       -216384.10           -32.30     1732184.22          0.62         -0.12             56.32             50.36
+5-10%     2371  1343502.44        676591.37       -886240.32           -65.96     2990435.91          0.23         -0.30             44.24             38.00
+10-20%    6158  3629517.26      -1109412.68      -6192186.30          -170.61    16940544.91         -0.07         -0.37             35.48             24.47
+>=20%    11188  6216638.88      -9889171.96     -49429251.99          -795.11    90235401.68         -0.11         -0.55             30.36              5.09
+  [figure] reports/phase8/sdr/figures/gp_roi_by_depth.png
+
+==========================================================================================
+3. BY PROMOTION KIND, BRAND, LENT, DURATION
+==========================================================================================
+
+By PROMO_KIND:
+                         events        cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                                         
+deal code, no price cut    2909    753292.79        903338.11       -611267.79           -81.15   2.390866e+06          0.38         -0.26             54.31             46.96
+price promotion           19560  11106383.20     -10156102.90     -56112794.93          -505.23   1.095077e+08         -0.09         -0.51             33.75             15.32
+
+By BG:
+               events       cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                              
+7-Up             1360   973810.71         36655.98      -6179065.69          -634.52    12831920.19          0.00         -0.48             42.79             19.56
+Coca-Cola Co.    3544  3058174.36      -6430699.77     -18378884.48          -600.98    32703845.03         -0.20         -0.56             30.62             12.25
+Dominick's       2364  1930957.57         18284.05       -465036.50           -24.08     5154715.02          0.00         -0.09             43.74             37.65
+Other           10542  3022434.88        572410.35     -11407005.85          -377.41    24667157.74          0.02         -0.46             37.59             19.77
+PepsiCo          4659  2874298.48      -3449415.41     -20294070.19          -706.05    36540928.74         -0.09         -0.56             32.56             14.79
+
+By LENT:
+          events       cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                         
+Lent        4271  2541356.71       2272740.79      -8757759.89          -344.61    19959048.22          0.11         -0.44             43.01             21.35
+not Lent   18198  9318319.29     -11525505.58     -47966302.83          -514.75    91939518.50         -0.13         -0.52             34.86             18.96
+
+By DURATION (weeks):
+       events       cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                      
+1       15829  5290126.92       2806212.37     -27313843.23          -516.32    55104339.86          0.05         -0.50             37.89             19.54
+2        4060  2652436.37      -6944234.93     -12273128.06          -462.71    24268993.93         -0.29         -0.51             32.32             20.30
+3        1377  1635165.47      -3077009.47      -7577026.85          -463.38    14328702.32         -0.21         -0.53             31.37             15.32
+4         609   767637.18      -1276848.83      -3575252.33          -465.75     7338398.77         -0.17         -0.49             34.32             22.17
+5+        594  1514310.06       -760883.93      -5984812.24          -395.22    10858131.84         -0.07         -0.55             38.72             16.84
+  [figure] reports/phase8/sdr/figures/lift_vs_gp_scatter.png
+
+==========================================================================================
+4. BEST AND WORST EVENTS (net gross-profit impact, pre-promotion cost)
+==========================================================================================
+Best 8:
+ EVENT_ID           DESCRIP START_DATE  DURATION_WEEKS  MEAN_DEPTH              PROMO_KIND  LIFT_PCT  NET_GP_IMPACT_PRE  NET_GP_IMPACT_REC  GP_ROI_PRE
+     2235   PEPSI-COLA CANS 1996-02-01               4        0.25         price promotion   6574.43          104338.40          195071.57        0.53
+    17087 COCA-COLA CLASSIC 1997-02-13               3        0.15         price promotion    454.92           85605.51           56615.88        1.62
+     2228   PEPSI-COLA CANS 1995-09-14               2        0.15         price promotion   7602.18           83257.65           69853.24        0.86
+     2174   PEPSI-COLA CANS 1990-07-19               1        0.00 deal code, no price cut   3360.82           77341.30           77341.30         NaN
+     2522   PEPSI-DIET CANS 1996-02-15               2        0.15         price promotion   8085.10           74975.32          102441.68        1.19
+    23382     SEVEN-UP CANS 1995-06-15               2        0.13         price promotion   3537.41           60880.94           78729.66        1.12
+     2459   PEPSI-DIET CANS 1990-07-19               1        0.00 deal code, no price cut   3102.02           59789.90           59789.90         NaN
+     8109  ROYAL CROWN COLA 1995-06-15               2        0.15         price promotion  17283.98           57870.57          101500.74        1.40
+
+Worst 8:
+ EVENT_ID              DESCRIP START_DATE  DURATION_WEEKS  MEAN_DEPTH              PROMO_KIND  LIFT_PCT  NET_GP_IMPACT_PRE  NET_GP_IMPACT_REC  GP_ROI_PRE
+       85      PEPSI COLA CANS 1996-11-21               3        0.38         price promotion   4194.23         -501202.88          -70237.47       -0.87
+       79      PEPSI COLA CANS 1996-06-06               5        0.27         price promotion   2379.73         -497388.34         -213868.05       -0.88
+    16892 COCA-COLA CLASSIC CA 1996-10-03               7        0.42         price promotion   4541.06         -495679.87         -169283.99       -0.51
+      847                 7-UP 1996-08-08               4        0.37         price promotion  12073.43         -444567.95         -247588.62       -0.72
+     1281    COKE CLASSIC CANS 1996-10-10               4        0.30         price promotion   2558.60         -363404.11         -169441.09       -0.94
+       84      PEPSI COLA CANS 1996-10-24               3        0.34         price promotion   3203.69         -359540.40         -144051.76       -0.76
+     1282    COKE CLASSIC CANS 1996-11-28              10        0.02 deal code, no price cut   1932.17         -337148.90           23667.72       -1.35
+    17193       COKE DIET CANS 1996-10-03               6        0.46         price promotion   4321.87         -286931.23          -97253.17       -0.51
+
+==========================================================================================
+5. KEY TAKEAWAYS (generated from the numbers above)
+==========================================================================================
+  * Highest return per $ of discount (pre cost): depth <5% (-0.12); lowest: >=20% (-0.55).
+  * 81% of events reduced gross profit if the retailer paid the whole discount.
+  * 11% of discount dollars went to units that would have sold anyway.
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data/processed/sdr_event_profit.csv  (24,811 events, 72 columns)
+
+==========================================================================================
+DONE
+==========================================================================================

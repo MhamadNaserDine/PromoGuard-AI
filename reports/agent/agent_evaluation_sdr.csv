@@ -1,0 +1,121 @@
+id,group,question,expected_tool,tools_used,expected_number,tool_ok,number_ok,rule_ok,cat_ok,pass,seconds,error,answer
+1,soft drinks,How many soft-drink promotion events did you analyse?,get_overview,get_overview,22469,True,True,True,True,True,3.4,,"I analysed **22,469 soft-drink promotion events**. They cover 497 products at Dominick's Finer Foods (Chicago) from 1989 to 1997. Each event is a chain promotion that ran in at least 20 stores. This is observed event data, and the lift and profit figures built on it are causal estimates."
+2,soft drinks,What is the typical (median) sales lift of a soft-drink promotion?,get_overview,get_overview,173.8,True,True,True,True,True,4.2,,"The typical (median) soft-drink promotion lifts sales by about **+174%**. This is a causal estimate from a counterfactual sales model. It covers 22,469 chain promotion events at Dominick's from 1989 to 1997.
+
+- **Pooled lift:** The pooled lift is higher, at about +291%. A few very large events pull it up, so the median is the better ""typical"" figure.
+- **Profit:** A big lift does not mean a profit. Under the conservative view, where the retailer pays the whole discount, only 19% of events made a gross profit. Net gross profit in that view is about –$56.7M. Under the recorded-cost view, which includes estimated supplier funding, it is about –$9.3M.
+
+**Recommendation:** Don't judge a promotion on lift alone. Check the gross profit and the supplier funding before you commit. I can run a break-even funding check for a specific product if you want one."
+3,soft drinks,"If the retailer pays the whole discount, what was the total net gross-profit impact of all Coke and Pepsi type soft-drink promotions (all soft drinks)?",get_overview,"get_overview,compare_groups",-56724063.0,True,True,True,True,True,6.3,,"**All soft drinks, retailer pays the whole discount: about –$56.7M net gross profit.** This is a causal estimate from the overview for 22,469 events, 1989–1997. It is gross profit, not net profit.
+
+Your wording could also mean only the Coke and Pepsi brand groups, so here is the split:
+
+| Brand group | Events | Net gross profit (retailer pays all) |
+|---|---|---|
+| Coca-Cola Co. | 3,544 | –$18.4M |
+| PepsiCo | 4,659 | –$20.3M |
+| **Coke + Pepsi groups** | 8,203 | **≈ –$38.7M** |
+| 7-Up, Dominick's, Other | 14,266 | ≈ –$18.0M |
+| **All soft drinks** | 22,469 | **–$56.7M** |
+
+- **Why it's negative:** the promotions lift volume a lot (pooled lift +291%). The discount cost ($111.9M) still outweighs the extra margin.
+- **Share of events that made money:** only 19.4% were profitable in this view.
+- **Recorded-cost view:** the loss shrinks to about –$9.3M for all soft drinks. That view includes an estimated $47.5M of supplier funding, which is estimated, not observed.
+
+**Recommendation:** Don't run Coke and Pepsi promotions at full retailer cost. Run them only with supplier funding. I can calculate the break-even supplier share for a specific product and discount if you want."
+4,soft drinks,"For soft drinks, how much gross profit per $1 of discount do discounts of 20% or more return when the retailer pays?",compare_groups,"compare_groups,report_card_summary,get_overview",-0.55,True,True,True,True,True,6.1,,"For soft drinks, discounts of 20% or more **lose** gross profit when the retailer pays the whole discount. They return **‑$0.55 per $1 of discount**, so each $1 of discount costs about $1.55 in total.
+
+- **Sample:** 11,188 events. This is a causal estimate under stated assumptions, not a guarantee.
+- **Net gross profit (retailer pays the whole discount):** about ‑$49.4M.
+- **Lift:** +444% pooled, so volume rises sharply.
+- **Profitable events:** only 5% of these events made money. 65% were volume traps (sales up, profit down) and 4% were outright losers. Another 26% were ""funded wins"", which profit only if the supplier pays.
+- **Recorded-cost view:** this view includes supplier funding, which is estimated rather than observed. It is still negative at ‑$0.11 per $1, or about ‑$9.9M.
+- **Shallower discounts:** they lose less, at ‑$0.37 for 10–20% and ‑$0.12 for under 5%.
+
+**Recommendation:** Don't run discounts of 20% or more on soft drinks unless the supplier covers a large share of the cost. I can calculate the break-even supplier funding for a specific product if you'd like."
+5,soft drinks,What share of the extra soft-drink units was taken from other soft drinks?,cannibalization/get_overview,cannibalization,4.5,True,True,True,True,True,6.1,,"**About 4.5% of the extra soft-drink units came from other soft drinks.** This is a causal estimate, using store×week fixed effects and instrumental variables.
+
+- Promotions produced about 113.9M extra units.
+- About 5.2M of those units were taken from other soft drinks.
+- That leaves about 108.7M net new units, or about 95.5%.
+
+By promoted brand, the units lost per 100 extra promoted units were:
+
+| Promoted brand | Lost per 100 extra units | Significant? |
+|---|---|---|
+| PepsiCo | 2.3 | Yes. The 90% CI is 0.8 to 3.7, so it excludes 0. |
+| Coca-Cola Co. | 0.8 | No. The CI includes 0. |
+| 7-Up | 1.7 | No. The CI includes 0. |
+| Dominick's | -0.6 | No. The CI includes 0. |
+| Other | -0.6 | No. The CI includes 0. |
+
+The brand-level figures are lower bounds, because the tool says the full-assortment figure is about 5.7 times larger. Treat the brand rows as directional only.
+
+Most promoted volume looks like new volume rather than a shift between soft drinks. The tool does not say whether the 4.5% includes products outside the soft-drink category, so I would not call it a full-store figure."
+6,soft drinks,"What is the best discount for Pepsi cola 2-litre (PEPSI COLA N/R), 2 weeks, retailer pays?",best_discount,"list_products,best_discount",1119.0,True,True,True,True,True,6.4,,"**Best option for PEPSI COLA N/R (2 L, regular price $1.59), 2 weeks, retailer pays the whole discount (conservative view): run a deal flag with no price cut.** This is a simulation, not a guarantee, and the profit figures are gross profit.
+
+| Option | Lift | Net gross profit vs. no promo |
+|---|---|---|
+| Deal flag, no price cut | +22% | **+$1.1k** |
+| 5% off | +41% | +$0.3k |
+| 10% off | +52% | –$1.2k |
+| 15% off | +84% | –$2.7k |
+| 20% off | +90% | –$5.1k |
+| 30% off | +208% | –$12.9k |
+| 40% off | +454% | –$33.2k |
+
+Every price cut sells more units, but it loses gross profit once you count the margin given away and the units taken from other products. The lift at 5% off is higher than the flag alone, but the discount costs more than the extra volume earns. None of the scenarios triggered an extrapolation warning.
+
+**Recommendation:** Use a feature or display (deal flag) without a price cut. If you want a real price cut, get supplier funding first. I can run `break_even_funding` for a given depth, such as 10–15%, to show how much the supplier would need to pay."
+7,soft drinks,What share of a 30% discount must the supplier fund on Pepsi cola 2-litre (2 weeks) so we break even?,break_even_funding,"list_products,break_even_funding",55.0,True,True,True,True,True,5.3,,"For Pepsi Cola 2 L (PEPSI COLA N/R, regular price $1.59), a 2-week, 30% discount needs the supplier to fund about **55%** of the discount for us to break even. This is a simulation, not a guarantee. It uses the conservative view, where the retailer pays the whole discount, and the profit is gross profit.
+
+| Item | Amount |
+|---|---|
+| Gross profit if we pay the whole discount | about -$12.9k |
+| Total discount cost | about $23.5k |
+| Supplier share needed to break even | 55% |
+
+The tool gave no extrapolation warning for this discount depth.
+
+**Recommendation:** Don't run this promotion unless the supplier commits to at least 55% funding. I'd ask for a bit more as a safety margin, because the simulation can be off."
+8,soft drinks,Which soft-drink promotion lost the most gross profit when the retailer pays?,find_events,find_events,-501203.0,True,True,True,True,True,5.2,,"The soft-drink promotion that lost the most gross profit, with the retailer paying the whole discount, was **Pepsi Cola Cans 24/12oz (event 85)**. It ran for 3 weeks from 21 Nov 1996 in 83 stores, at an average discount of 38%.
+
+- **Gross profit, retailer pays the whole discount (conservative view):** about **–$501k**.
+- **Gross profit, recorded cost view:** about –$70k. This view includes supplier funding of about $431k, which is estimated, not observed.
+- **Volume:** units sold were far above baseline (lift of about +4,194%, about 175k extra units). About 22k units were taken from other soft drinks. The volume was large, but the discount cost of about $576k outweighed the margin on it.
+
+These figures are a causal estimate under stated assumptions, based on observed data.
+
+The next worst events were Pepsi Cola Cans (event 79, –$497k) and Coca-Cola Classic 6/12oz (event 16892, –$496k). They are close to the Pepsi 1996 promotion above.
+
+**Recommendation:** Don't repeat discounts of about 38% on Pepsi cans unless the supplier funds most of the discount. If you want to plan around funding, I can calculate the break-even supplier share."
+9,soft drinks,"For soft drinks, do deals without a price cut lose less gross profit per $1 of discount than price cuts (retailer pays)?",compare_groups,compare_groups,-0.26,True,True,True,True,True,5.5,,"Yes. In soft drinks, deals with no price cut lose less gross profit per $1 of discount than price cuts. This is the ""retailer pays the whole discount"" (conservative) view. The figures are causal estimates under stated assumptions.
+
+| Promo type | Events | Lift | Gross profit per $1 of discount | Share of events profitable |
+|---|---|---|---|---|
+| Deal code, no price cut | 2,909 | +181% | **-$0.26** | 47% |
+| Price promotion | 19,560 | +304% | **-$0.51** | 15% |
+
+- **Total loss:** Price promotions lose about $56.1k in total, against about $0.6k for deal codes. These are the totals the tool returned, and they come out at -$56.1M and -$0.6M. Price promotions are far larger in number, so most of the gap in total comes from volume.
+- **Lift:** Price cuts give more extra sales, but that extra volume does not make up for the margin given away.
+- **Recorded-cost view:** This view includes supplier funding, which is estimated rather than observed. Deal codes come out at +$0.38 per $1 and price promotions at -$0.09 per $1. The ranking is the same.
+
+Neither type pays back its discount when the retailer funds it. Before running price cuts, get supplier funding. If you want a promotion without that funding, deal-code formats lose less per dollar."
+10,both,Do promotions pay off better for canned tuna or for soft drinks?,compare_categories/get_overview,compare_categories,"[-0.51, -56724063.0]",True,True,True,True,True,5.9,,"Canned tuna promotions pay off better. These are causal estimates (same method for both categories), and profit means gross profit.
+
+| | Tuna | Soft drinks |
+|---|---|---|
+| Events | 1,068 | 22,469 |
+| Median event lift | +50% | +174% |
+| Pooled lift | +218% | +291% |
+| Share of extra units taken from other products (cannibalization) | 4.1% | 4.5% |
+| Gross profit, ""retailer pays the whole discount"" view (conservative) | about +$2.5k (roughly break-even) | about –$56.7M |
+| Gross profit, ""recorded cost"" view (includes estimated supplier funding) | about +$849k | about –$9.3M |
+| Share of events profitable (retailer-pays view) | 62% | 19% |
+
+- **Sales response:** Soft drinks sell more extra units per promotion. That extra volume doesn't turn into profit.
+- **Tuna by depth:** Shallow discounts (under 5%) work best. They earn about $1.25 of gross profit per discount dollar. Discounts of 20% or more lose money, at about –$0.24 per discount dollar.
+- **Soft drinks by depth:** Every depth loses money in the retailer-pays view. The loss grows with depth, from about –$0.12 per discount dollar under 5% to –$0.55 at 20% or more.
+- **Recorded-cost view:** Even with supplier funding counted, soft drinks still lose money overall. Supplier funding is estimated, not observed.
+
+**Recommendation:** Keep tuna promotions shallow, under 10%. For soft drinks, cut deep discounts, or run them only when the supplier funds a large share of the discount."

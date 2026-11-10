@@ -1,0 +1,217 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 4 EXPLORATORY DATA ANALYSIS — canned tuna
+==========================================================================================
+All results are descriptive. Causal estimates come in later phases.
+Panel rows: 1,052,818 | products: 73 | stores: 93
+
+==========================================================================================
+DATA COVERAGE BY WEEK
+==========================================================================================
+Usual number of stores reporting tuna: 83
+Weeks below 50% coverage (no data or a handful of stores): 59
+  [219, 262, 263, 264, 265, 278, 279, 284, 285, 314, 315, 316, 317, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 384, 385, 386, 387, 392, 393]
+Longest gap: weeks 332-371 (40 weeks, 1996-01-18 to 1996-10-23)
+-> These weeks are excluded from weekly analyses here and must be excluded from model training.
+Panel rows kept for analysis: 1,052,794
+
+==========================================================================================
+Q1. CATEGORY DEMAND OVER TIME (tuna units per active store per week)
+==========================================================================================
+      weeks  units_per_store  promo_share  stores
+YEAR                                             
+1989     16          1229.45         0.14   71.06
+1990     52          1508.50         0.24   76.12
+1991     52          1396.35         0.24   81.54
+1992     53          1202.16         0.20   84.26
+1993     51          1112.67         0.24   85.49
+1994     48          1040.31         0.23   84.08
+1995     44           955.81         0.27   80.39
+1996     12           968.12         0.12   82.42
+1997     12          1093.00         0.07   83.00
+
+Note: 1989 and 1997 are partial years; low-coverage weeks are excluded (see DATA COVERAGE).
+  [figure] reports/phase4/figures/q1_category_demand_lent.png
+
+==========================================================================================
+Q2. LENT EFFECT ON TUNA DEMAND
+==========================================================================================
+February–April weeks only (raw means):
+           UNITS_PER_STORE  PROMO_SHARE
+LENT_WEEK                              
+False              973.892        0.182
+True              1947.692        0.306
+-> The chain promotes tuna much more often during Lent. Lent and promotion are entangled.
+
+Weekly regressions, month FE + year FE + holiday dummies, Newey-West SE (4 lags).
+Identification comes from Easter moving between late March and late April across years.
+
+(a) Total tuna units per store
+    without promotion control : +63.6%  (95% CI +18.5% to +125.7%; t = 2.99; n = 340 weeks; R2 = 0.46)
+    with promotion share      : +50.7%  (95% CI +9.0% to +108.4%; t = 2.48; n = 340 weeks; R2 = 0.50)
+
+(b) Products sold at their REGULAR price only (log units vs. own product-store average)
+    with promotion share      : -5.1%  (95% CI -11.1% to +1.3%; t = -1.56; n = 336 weeks; R2 = 0.71)
+
+Reading:
+ - Total tuna demand is clearly higher in weeks overlapping Lent, even after holding the
+   share of promoted products fixed (the interval is wide: only ~8 Lent seasons in the data).
+ - Products sold at their REGULAR price do NOT rise in Lent (if anything they fall): the extra
+   Lent demand flows to promoted items, which the chain concentrates in Lent.
+ - Consequences: (1) the baseline/counterfactual model must include Lent features;
+   (2) Lent is a CONFOUNDER for promotion effects - comparing promoted vs. non-promoted
+   weeks without adjusting for Lent would overstate promotion lift.
+  [figure] reports/phase4/figures/q2_lent_profile.png
+
+==========================================================================================
+Q3. BRAND SHARES BY YEAR (% of tuna units)
+==========================================================================================
+BRAND_GROUP  StarKist  Chicken of the Sea  Bumble Bee  Dominick's  Other
+YEAR                                                                    
+1989             37.3                26.0        18.1        10.9    7.6
+1990             40.9                25.7        17.0        10.2    6.3
+1991             39.2                31.1        15.0         9.0    5.8
+1992             28.8                26.1        27.6        11.8    5.6
+1993             27.9                27.1        26.9        11.5    6.6
+1994             29.7                23.9        25.8        14.6    6.0
+1995             36.4                27.0        17.0        11.8    7.8
+1996             22.2                17.2        45.7        10.4    4.4
+1997             28.5                15.4        39.5        11.7    5.0
+
+Share of weeks on promotion and share of units sold on promotion, by brand:
+                    promo_week_share  units_on_promo
+BRAND_GROUP                                         
+Bumble Bee                      27.3            53.5
+Chicken of the Sea              25.4            56.4
+Dominick's                      19.4            36.7
+Other                           29.3            41.0
+StarKist                        14.7            46.5
+  [figure] reports/phase4/figures/q3_brand_shares.png
+
+==========================================================================================
+Q4. PROMOTION CALENDAR — DO COMPETING BRANDS PROMOTE IN THE SAME WEEKS?
+==========================================================================================
+Share of weeks each brand has at least one chain promotion event running:
+StarKist              64.0
+Chicken of the Sea    64.2
+Bumble Bee            63.7
+Dominick's            33.8
+
+Number of major brands promoting in the same week — observed vs. expected if independent (%):
+   observed  expected_if_independent
+0      15.7                      3.0
+1       8.9                     18.2
+2      24.6                     38.1
+3      35.5                     32.1
+4      15.2                      8.7
+
+Pairwise co-promotion: observed share of weeks both promote / expected if independent:
+                    StarKist  Chicken of the Sea  Bumble Bee  Dominick's
+StarKist                 NaN                1.22        1.17        1.22
+Chicken of the Sea      1.22                 NaN        1.15        1.24
+Bumble Bee              1.17                1.15         NaN        1.13
+Dominick's              1.22                1.24        1.13         NaN
+(> 1: promote together more often than chance; < 1: they alternate)
+  [figure] reports/phase4/figures/q4_promotion_calendar.png
+
+==========================================================================================
+Q5. WHAT HAPPENS AFTER A PROMOTION? (event study, descriptive)
+==========================================================================================
+Events used: 669 chain events lasting 1–2 weeks (the most common, cleanest windows)
+RATIO = units / median units in regular weeks -8..-3 of the same store (1.0 = normal).
+geo_mean = geometric mean of RATIO (robust to the huge spikes, not stuck at integer medians).
+Post-event weeks that were themselves promotions are excluded.
+     geo_mean  median    obs
+REL                         
+-8      0.970   1.000  28250
+-7      0.982   1.000  28738
+-6      0.973   1.000  28918
+-5      0.973   1.000  28106
+-4      0.952   1.000  27653
+-3      0.920   1.000  28449
+-2      0.897   0.938  30112
+-1      0.998   1.000  36512
+ 0      2.115   1.706  44065
+ 1      1.170   1.136  38046
+ 2      0.882   0.919  30833
+ 3      0.861   0.889  27929
+ 4      0.903   0.929  26655
+ 5      0.873   0.903  25673
+ 6      0.935   0.970  26822
+ 7      0.892   0.920  26363
+ 8      0.904   0.934  26387
+
+Geo-mean ratio, pre weeks -8..-3: 0.962 | post weeks +2..+8: 0.893 -> post-promotion level -7.2% vs. pre-promotion
+A dip after promotions is consistent with stockpiling / purchase acceleration: part of the
+promotion spike is sales borrowed from future weeks. The incremental-sales phase must count it.
+  [figure] reports/phase4/figures/q5_post_promotion.png
+
+==========================================================================================
+Q6. STORES BY PRICE TIER
+==========================================================================================
+(top product = PRODUCT_ID 8000000245)
+                             stores  units_per_store_week  promo_share  mean_margin_pct  regular_price_top_product
+PRICE_TIER                                                                                                        
+Cub-Fighter                       9              1339.797        0.170           20.363                       0.75
+High                             25              1270.742        0.235           27.576                       0.97
+Low                               9              1455.291        0.211           22.821                       0.79
+Medium                           42              1057.929        0.224           24.410                       0.89
+unknown (opened after 1992)       8              1181.636        0.148           25.651                       0.89
+
+Reading: the tier sets the REGULAR price; promoted prices are set chainwide (manual),
+so the same promotion is a deeper discount in high-tier stores. Tier is a key store feature.
+
+==========================================================================================
+Q7. FIRST LOOK AT SUBSTITUTION BETWEEN MAJOR BRANDS (descriptive, NOT causal)
+==========================================================================================
+Lead product per brand:
+  StarKist             8000000245  STAR K CH LT TUNA WA
+  Chicken of the Sea   4800000024  C O S CHUNK LIGHT TU
+  Bumble Bee           8660000033  BUM BEE/WATER CHK LI
+  Dominick's           3828105003  HH CHUNK LITE TUNA/O
+
+Geometric-mean sales of the COLUMN brand's lead product, relative to weeks when none of the
+four lead products is promoted, in store-weeks where the ROW brand's lead product is on
+promotion (off-diagonal: and no other lead product is):
+                    StarKist  Chicken of the Sea  Bumble Bee  Dominick's
+StarKist               2.724               0.871       0.820       0.642
+Chicken of the Sea     0.966               2.572       0.895       0.736
+Bumble Bee             0.952               0.839       2.683       0.670
+Dominick's             1.003               1.275       1.004       1.411
+Diagonal = own promotion; off-diagonal < 1 is consistent with sales being drawn away (substitution).
+Off-diagonal range: 0.642 to 1.275 (mean 0.889)
+Caveat: NORMAL uses a centred 13-week window (descriptive only); not a counterfactual model.
+  [figure] reports/phase4/figures/q7_substitution_matrix.png
+
+==========================================================================================
+CHECK: EVENTS WITH PRICE ABOVE THE REGULAR PRICE (negative mean depth)
+==========================================================================================
+Events with mean depth below -5%: 26 of 1149
+ EVENT_ID  PRODUCT_ID  START_WEEK  DURATION_WEEKS  STORES  MEAN_DEPTH  SHARE_PRICE_PROMO MAIN_DEAL_CODE
+       33  3828105001         114               2      72      -0.111              0.130              B
+       43  3828105001         217               2      85      -0.059              0.077              B
+       70  3828105003         217               2      85      -0.070              0.024              B
+       99  3828105005         117               2       2      -0.053              0.000              B
+      105  3828105005         178               1       1      -0.106              0.000              B
+      186  4800000005         286               4      75      -0.058              0.000              B
+      203  4800000009         127               7      84      -0.188              0.119              B
+      225  4800000012          42               4      81      -0.067              0.073              B
+      277  4800000024          43               1      80      -0.141              0.112              B
+      296  4800000024         149               2      52      -0.095              0.000              B
+      307  4800000024         213               6      86      -0.096              0.099              B
+      406  4800000619         125               1      42      -0.060              0.000              B
+      535  7114010130          55               3      81      -0.061              0.079              B
+      560  7760015227          60               1      77      -0.090              0.000              B
+      701  8000000245         122               1      73      -0.135              0.014              B
+These are deal-coded weeks where the shelf price was ABOVE the recent regular price
+(e.g. a regular price increase in the same week). Kept, labelled deal_only.
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data\processed\tna_week_features.csv  (calendar features: LENT_WEEK, LENT_DAYS, WEEKS_TO_EASTER, COVERAGE_OK, ...)
+Figures in reports/phase4/figures/
+
+==========================================================================================
+DONE
+==========================================================================================

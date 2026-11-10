@@ -1,0 +1,19 @@
+# secrets (API keys) — never commit
+.streamlit/secrets.toml
+.env
+
+# environment & caches
+.venv/
+__pycache__/
+*.pyc
+.idea/
+
+# raw data: Kilts Center licence (download it yourself, see README)
+data/raw/
+
+# large generated files (re-create with: python run_pipeline.py)
+data/processed/
+models/
+
+# Kilts Center manual (licensed document, download it from the Kilts Center)
+docs/*.pdf

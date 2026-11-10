@@ -1,0 +1,224 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 2 DATA CLEANING — category 'tna'
+==========================================================================================
+Movement file: data\raw\dominicks\tna\wtna.zip
+
+==========================================================================================
+STEP 1 — ROW FILTERS (waterfall)
+==========================================================================================
+  raw rows                                                        3,763,229
+  R1 drop OK == 0 (flagged as trash by Kilts)                        77,965
+  R2 drop PRICE == 0 & MOVE == 0 (no sale, no price)              1,302,281
+  R3 drop PRICE <= 0 & MOVE > 0 (invalid)                                 0
+  rows kept                                                       2,382,983  (63.3% of raw)
+
+  Remaining rows with MOVE == 0 and PRICE > 0: 0
+  -> the raw data never records a zero-sales week together with a price.
+
+==========================================================================================
+STEP 2 — DERIVED MEASURES (R4-R6)
+==========================================================================================
+UNIT_PRICE = PRICE / QTY ; DOLLARS = PRICE * MOVE / QTY ; GROSS_PROFIT = DOLLARS * MARGIN_PCT / 100
+Total dollar sales  : $50,867,292
+Total gross profit  : $13,022,540  (average margin 25.6%)
+
+DEAL_CODE counts after cleaning:
+DEAL_CODE
+NONE    1949236
+B        414530
+S         17898
+G          1319
+
+==========================================================================================
+STEP 3 — QUALITY FLAGS (R7: flagged, NOT removed)
+==========================================================================================
+NEG_MARGIN_FLAG   : 11,173 rows (0.47%)
+EXTREME_MARGIN_FLAG: 1,038 rows (MARGIN_PCT >= 95, cost near zero)
+MOVE_OUTLIER_FLAG : 1,821 rows (0.076%)  [robust z of log(1+MOVE) > 5.0 within UPC-store, and MOVE >= 100]
+
+Deal code mix — all rows vs. negative-margin rows vs. outlier rows (% of rows):
+            all  neg_margin  outlier
+DEAL_CODE                           
+B          17.4        17.0     22.7
+G           0.1         5.8     17.7
+NONE       81.8        62.5     23.9
+S           0.8        14.8     35.6
+
+15 largest flagged MOVE values:
+       UPC  STORE  WEEK  MOVE  UNIT_PRICE  MARGIN_PCT DEAL_CODE
+8660000033    133   128 14663        0.38       31.31         B
+8660000033     71   127 14653        0.39       27.69         B
+4800000024    133   130 13642        0.33       58.78         S
+4800000024    102    76 13017        0.29       99.99      NONE
+8000000245    102    74 11807        0.37       60.27      NONE
+4800000024    130    76 10772        0.29       99.99      NONE
+8000000245     70    74 10267        0.37       60.27      NONE
+4800000024     18    76 10149        0.29       99.99      NONE
+4800000024      8   131  9855        0.39       34.36         S
+4800000024     73   131  9756        0.39       34.36         S
+4800000024     70    76  9600        0.29       99.99      NONE
+4800000024     83   181  9576        0.39      -22.31         B
+8000000245     59    74  9534        0.37       60.27      NONE
+4800000024     98    76  9480        0.29       99.99      NONE
+4800000024     76    76  9393        0.29       99.99      NONE
+
+==========================================================================================
+STEP 4 — PRODUCT TABLE AND PRODUCT_ID (R8)
+==========================================================================================
+UPC pairs sharing an NITEM: 66 | linked into one PRODUCT_ID: 48
+Distinct UPCs: 278 -> distinct PRODUCT_IDs: 230
+Tuna: 90 UPCs -> 73 PRODUCT_IDs
+
+All NITEM pairs and the decision (review this table):
+ ANCHOR_UPC         UPC          ANCHOR_DESC                 DESC ANCHOR_SIZE   SIZE  SAME_ATTRIBUTES  SIZE_OK  CONCURRENT_SHARE  LINKED
+ 7402700112  7402700102 ~POLAR WHITE CRAB ME ~POLAR WHITE CRAB ME        6 OZ   6 OZ             True     True             0.013    True
+79852503018  9852503018     DOXEE CLAM JUICE     DOXEE CLAM JUICE        8 OZ   8 OZ             True     True             0.004    True
+ 5300016100 79852516100 SNOW'S CHOPPED CLAMS SNOW'S CHOPPED CLAMS      6.5 OZ 6.5 OZ             True     True             0.017    True
+ 5300016099 79852516099   SNOWS MINCED CLAMS   SNOWS MINCED CLAMS      6.5 OZ 6.5 OZ             True     True             0.011    True
+ 7910000487  8000000487     EATWELL MACKEREL     EATWELL MACKEREL       15 OZ  15 OZ             True     True             0.052    True
+ 4800000012  1780000012  COS CHUNK LIGHT OIL  COS CHUNK LIGHT OIL        6 OZ   6 OZ             True     True             0.100    True
+ 4800000012  4800000120  COS CHUNK LIGHT OIL  COS CHUNK LIGHT OIL        6 OZ   6 OZ             True     True             0.063    True
+ 4800000001  1780000001 ~COS CHUNK LGHT TUNA C O S CHNK LGHT TUNA      3.25OZ 3.25OZ             True     True             0.000    True
+ 4800000024  1780000024 C O S CHUNK LIGHT TU C O S CHUNK LIGHT TU        6 OZ   6 OZ             True     True             0.019    True
+ 4800000081  1780000081 C O S L/S CHUNK LIGH C O S L/S CHUNK LIGH      6.5 OZ 6.5 OZ             True     True             0.014    True
+ 4800001504  1780001504 C O S CHUNK LIGHT TU C O S CHUNK LIGHT TU      9.25 O 9.25 O             True     True             0.013    True
+ 4800000086  1780000086    C O S PINK SALMON C O S PINK SALMON BO        6 OZ   6 OZ             True     True             0.016    True
+ 4800000466  1780000466 C O S CHUNK LIGHT OI C O S CHUNK LIGHT OI      12.5 O 12.5 O             True     True             0.000    True
+ 4800000005  1780000005  ~COS SOLID WH. TUNA  ~COS SOLID WH. TUNA      3.25OZ 3.25OZ             True     True             0.056    True
+ 4800000009  1780000009  C O S SOLID WHITE -  C O S SOLID WHITE -        6 OZ   6 OZ             True     True             0.036    True
+ 4800001164  1780001164 C O S CHUNK LIGHT WA C O S CHUNK LIGHT WA      12.5 O 12.5 O             True     True             0.011    True
+ 8660011451  8660000078 BUM BEE CHNK LT TUNA BUMBLE BEE PINK SALM      3/3 OZ 6.5 OZ            False    False             0.000   False
+ 8660000070  8660012338 BUMBLE BEE PINK SALM BUMBLE BEE PINK SALM      14.7 O 14.7 O             True     True             0.000    True
+ 8000000280  7910000280 STAR KIST CH LT TUNA STAR KIST CH LT TUNA      6.12 O   6 OZ             True     True             0.038    True
+ 8000000197  7910000197 STAR K PRIME CTCH SL STAR K PRIME CATCH W      6.12 O 6.12 O            False     True             0.051   False
+ 8000000150  7910000198 STARKIST SOLID WHITE STAR K PRIME CATCH O        9 OZ 6.12 O            False    False             0.000   False
+ 8000000150  8000000198 STARKIST SOLID WHITE STAR K PRIME CATCH O        9 OZ 6.5 OZ            False    False             0.000   False
+ 8000000314  7910000314 STAR KIST CHUNK LIGH STAR KIST CHUNK LIGH      3.3 OZ 3.3 OZ             True     True             0.240   False
+ 8000001484  8000000147 SK SLD WHT TUNA/WATE STARKIST SLD WHITE T      3/3 OZ 3.25OZ            False    False             0.029   False
+ 8000001484  7910000147 SK SLD WHT TUNA/WATE STARKIST SLD WHITE T      3/3 OZ 3.5 OZ            False    False             0.001   False
+ 8000000245  7910000245 STAR K CH LT TUNA WA STAR K CH LT TUNA WA      6.12 O   6 OZ             True     True             0.006    True
+ 8000000109  8000000244 SK CHNK LGHT TUNA/WA  STARKIST CK LT TUNA      3/3 OZ 3.25OZ            False    False             0.045   False
+ 8000000109  7910000244 SK CHNK LGHT TUNA/WA  STARKIST CK LT TUNA      3/3 OZ 3.25OZ            False    False             0.000   False
+ 8000000325  7910000325 STARKIST CHUNK LIGHT STAR KIST CHUNK LIGH        9 OZ 9.25 O             True     True             0.010    True
+ 8000000334  7910000334 STAR KIST CHUNK TUNA STAR KIST CHUNK TUNA      12.5 O 12.5 O             True     True             0.011    True
+ 4800000619  3810000619       ~COS DIET TUNA       ~COS DIET TUNA      6.5 OZ 6.5 OZ             True     True             0.044    True
+ 8000000134  7910000134 ~STAR K CNK LITE TUN ~STAR K CNK LITE TUN      6.12 O 6.12 O             True     True             0.015    True
+ 8000000141  7910000141 STAR K SOLID WHT TUN STAR K SOLID WHT TUN      6.12 O   6 OZ             True     True             0.046    True
+ 3828105001  3828105003 HH CHUNK LITE TUNA/O HH CHUNK LITE TUNA/O      6.5 OZ 6.5 OZ             True     True             0.517   False
+ 3828105005   382105005 HH CHUNK LIGHT TUNA/ DOM CHUNK LIGHT TUNA      6.5 OZ   6 OZ             True    False             0.023   False
+ 4160000010  4160000001 BOOTH SARD OIL EZ OP   BOOTH SARD OIL E-Z      3.75 O 3.75 O             True     True             0.004    True
+ 3480000400  7114000400 KING OSCAR KIPPER SN KING OSCAR KIPPER SN      3.25OZ 3.25OZ             True     True             0.040    True
+ 3480000612  7114000612  KING OSCAR SARDINES  KING OSCAR SARDINES      3.75 O 3.75 O             True     True             0.019    True
+ 3480000622  7114000622  KING OSCAR SARDINES  KING OSCAR SARDINES      3.75 O 3.75 O             True     True             0.031    True
+ 3480000215  7114000215  king oscar brsl sar  KING OSCAR BRISLING      1.5 OZ 1.5 OZ             True     True             0.000    True
+ 7114000632  3480000632  KING OSCAR SARDINES  KING OSCAR SARDINES      3.75 O 3.75 O             True     True             0.062    True
+ 7402700198  7402700160       POLAR MACKEREL POLAR SARDINES IN LE       15 OZ  4.5OZ             True    False             0.000   False
+ 7402700108  7402700170 ~POLAR TINY IMPORTED POLAR SARDINES IN TO      4.25 O  4.5OZ            False     True             0.000   False
+ 4144670817  4144670117 ORLEANS IMPORTED TIN ORLEANS IMPORTED TIN      4.25 O 4.25 O             True     True             0.000    True
+ 4144670817  4600070017 ORLEANS IMPORTED TIN ORLEANS IMPORTED TIN      4.25 O 4.25 O             True     True             0.000    True
+ 4144670012  4600070012 ORLEANS DOMESTIC SMA ORLEANS DOMESTIC SMA      4.25 O 4.25 O             True     True             0.016    True
+ 4800000061  4144670023    COS LUMP CRABMEAT ORLEANS DOM MED DEVE        6 OZ 4.25 O            False    False             0.000   False
+ 4800000061  4600070023    COS LUMP CRABMEAT ORLEANS DOM MED DEVE        6 OZ 4.25 O            False    False             0.000   False
+ 4800000061  4144670223    COS LUMP CRABMEAT ORLEANS DOM MED DEVE        6 OZ 4.25 O            False    False             0.000   False
+ 4144670022  4600070022 ORLEANS DEVEIN SMALL ORLEANS DEVEIN SMALL      4.25 O 4.25 O             True     True             0.006    True
+ 4144670033  4600070033 ORLEANS SMOKED OYSTE ORLEANS SMOKED OYSTE      3.75 O 3.75 O             True     True             0.000    True
+ 2800000271  3900000271 $C & B IMPORTED CAPE $C & B IMPORTED CAPE      3.5 OZ 3.5 OZ             True     True             0.006    True
+ 7185010122  7020023015 $ROM RED LUMPFISH CA $ROM RED LUMPFISH CA        2 OZ   2 OZ             True     True             0.019    True
+ 7020023036  7185010214  $ROMANOFF WHITEFISH ROMANOFF WHITEFISH C        4 OZ   2 OZ             True    False             0.000   False
+ 7185010123  7185010132 $ROMANOFF CAVIER RED ROMANOF GLDN LUMPFIS      3.5 OZ   2 OZ             True    False             0.031   False
+ 7185010123  7020023016 $ROMANOFF CAVIER RED $ROMANOFF CAVIER RED      3.5 OZ 3.5 OZ             True     True             0.005    True
+ 7185010123  1860023016 $ROMANOFF CAVIER RED $ROMANOFF CAVIER RED      3.5 OZ 3.5 OZ             True     True             0.004    True
+ 7185010112  7020023000 ROM BLK LUMPFISH CAV ROM BLK LUMPFISH CAV        2 OZ   2 OZ             True     True             0.018    True
+ 1119449696  1119449692 $S & W WHOLE BABY CL $S & W WHOLE BABY CL      10.25O 10.25O             True     True             0.006    True
+ 7114000093  4140000093 KING OSCAR FLAT ANCH KING OSCAR FLAT ANCH        2 OZ   2 OZ             True     True             0.025    True
+ 7114000095  4140000095 KING OSCAR ROLLED AN KING OSCAR ROLLED AN        2 OZ   2 OZ             True     True             0.051    True
+ 7185010322  7020023054 ROM.RED SALMON CAVIA ROM.RED SALMON CAVIA        2 OZ   2 OZ             True     True             0.002    True
+ 7185010322  1860023054 ROM.RED SALMON CAVIA ROM.RED SALMON CAVIA        2 OZ   2 OZ             True     True             0.007    True
+ 7185010212  7020023035 $ROMANOFF BLK WHTFSH $ROMANOFF BLK WHTFSH        2 OZ   2 OZ             True     True             0.018    True
+ 7020023019  1860053019 ROMANOF GLDN LUMPFIS ROMANOF GLDN LUMPFIS        2 OZ   2 OZ             True     True             0.000    True
+ 7185010113  7020023002 ROMANOFF ICELAND LUM ROMANOFF ICELAND LUM      3.5 OZ 3.5 OZ             True     True             0.012    True
+
+==========================================================================================
+STEP 5 — CATEGORY COMPOSITION (cleaned data)
+==========================================================================================
+                 UPCs  PRODUCTS     UNITS       DOLLARS  UNITS_%  DOLLARS_%
+SUBCATEGORY                                                                
+tuna               90        73  33133158  3.406161e+07     78.2       67.0
+sardine_herring    46        39   3046316  3.772735e+06      7.2        7.4
+shellfish          72        62   2835300  5.222138e+06      6.7       10.3
+salmon             28        26   2368063  6.263336e+06      5.6       12.3
+anchovy             8         6    583535  8.017568e+05      1.4        1.6
+tuna_seasoning      4         4    210726  1.268568e+05      0.5        0.2
+other_non_tuna      8         7    131000  3.658740e+05      0.3        0.7
+caviar_roe         22        13     61536  2.529899e+05      0.1        0.5
+
+Tuna units by BRAND (%):
+BRAND
+StarKist              33.7
+Chicken of the Sea    26.3
+Bumble Bee            22.5
+Dominick's            11.2
+Geisha                 4.1
+3-Diamond              2.1
+P.S.                   0.0
+
+Tuna units by TUNA_MEAT (%):
+TUNA_MEAT
+light      75.0
+white      20.9
+unknown     4.1
+
+Tuna units by TUNA_STYLE (%):
+TUNA_STYLE
+chunk      79.9
+solid      13.4
+unknown     6.7
+
+Tuna units by TUNA_PACK (%):
+TUNA_PACK
+unknown    52.4
+water      34.1
+oil        13.5
+
+Tuna units by TUNA_VARIANT (%):
+TUNA_VARIANT
+regular            97.4
+diet_low_sodium     2.4
+flavoured_kit       0.2
+
+==========================================================================================
+STEP 6 — CALENDAR (official week table from the manual)
+==========================================================================================
+Date range: 1989-09-14 -> 1997-05-07
+Rows in holiday weeks:
+HOLIDAY
+New-Year          56147
+Christmas         55770
+Halloween         52954
+Thanksgiving      52877
+Labor Day         44257
+Easter            43519
+Presidents Day    43447
+Memorial Day      42846
+4th of July       41079
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data\processed\tna_products.csv  (278 products)
+data\processed\tna_movement_clean.parquet  (2,382,983 rows x 19 columns)
+
+Columns: ['STORE', 'UPC', 'PRODUCT_ID', 'SUBCATEGORY', 'WEEK', 'WEEK_START', 'WEEK_END', 'HOLIDAY', 'MOVE', 'QTY', 'PRICE', 'UNIT_PRICE', 'DOLLARS', 'MARGIN_PCT', 'GROSS_PROFIT', 'DEAL_CODE', 'NEG_MARGIN_FLAG', 'EXTREME_MARGIN_FLAG', 'MOVE_OUTLIER_FLAG']
+
+Sample rows:
+ STORE        UPC  PRODUCT_ID     SUBCATEGORY  WEEK WEEK_START   WEEK_END   HOLIDAY  MOVE  QTY  PRICE  UNIT_PRICE  DOLLARS  MARGIN_PCT  GROSS_PROFIT DEAL_CODE  NEG_MARGIN_FLAG  EXTREME_MARGIN_FLAG  MOVE_OUTLIER_FLAG
+   113 8000000197  8000000197            tuna    88 1991-05-16 1991-05-22       NaN    14    1   0.92        0.92    12.88       16.96      2.184448      NONE            False                False              False
+   132 3480000622  3480000622 sardine_herring    90 1991-05-30 1991-06-05       NaN     6    1   1.57        1.57     9.42       30.13      2.838246      NONE            False                False              False
+   118 4800000074  4800000074       shellfish   148 1992-07-09 1992-07-15       NaN     1    1   0.99        0.99     0.99       25.56      0.253044      NONE            False                False              False
+     8 8000000109  8000000109            tuna   276 1994-12-22 1994-12-28 Christmas     6    1   1.75        1.75    10.50        5.37      0.563850      NONE            False                False              False
+    77 4800000076  4800000076       shellfish   175 1993-01-14 1993-01-20       NaN     2    1   2.92        2.92     5.84       44.42      2.594128      NONE            False                False              False
+
+==========================================================================================
+DONE
+==========================================================================================

@@ -1,0 +1,187 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 6 INCREMENTAL SALES — canned tuna
+==========================================================================================
+Baseline model specification: random_forest (Phase 5)
+
+Rows by phase:
+                  rows     units  units_%
+PHASE                                    
+none            451929   7298466     22.0
+post            189591   4271476     12.9
+post_excluded    42554   1735217      5.2
+pre             104856   2118311      6.4
+pre_excluded     27353   1018198      3.1
+promo           226555  16131844     48.7
+promo_excluded    9980    559646      1.7
+
+Promotion-week rows excluded (no sales history to build a counterfactual): 9,980 rows, 3.4% of promotion-week units
+Post-window rows that are partial promotions (price still low / chain still promoting): 42,554 — not used to measure the dip
+
+==========================================================================================
+1. CROSS-FITTED COUNTERFACTUAL PREDICTIONS (one model per year, predicts the held-out year)
+==========================================================================================
+  fold 0: trained on 300,000 rows, predicted 169,600 (39s)
+  fold 1: trained on 300,000 rows, predicted 139,410 (39s)
+  fold 2: trained on 300,000 rows, predicted 169,741 (38s)
+  fold 3: trained on 300,000 rows, predicted 176,842 (38s)
+  fold 4: trained on 300,000 rows, predicted 167,453 (38s)
+  fold 5: trained on 300,000 rows, predicted 149,099 (39s)
+  fold 6: trained on 300,000 rows, predicted 80,673 (39s)
+
+Out-of-sample check on clean regular weeks of each held-out fold:
+      train_rows  pred_rows  clean_rows    WAPE    BIAS  seconds
+fold                                                            
+0         300000     169600       97312  0.3712 -0.0494       39
+1         300000     139410       86920  0.3582 -0.0251       39
+2         300000     169741      110857  0.3776  0.0291       38
+3         300000     176842      115309  0.3687 -0.0400       38
+4         300000     167453      111481  0.3500 -0.0070       38
+5         300000     149099       95373  0.3639 -0.0367       39
+6         300000      80673       62742  0.3812 -0.0452       39
+
+==========================================================================================
+2. PLACEBO WINDOWS (no promotion nearby; true lift = 0)
+==========================================================================================
+Counterfactual error in % by window length (weeks):
+          count  mean   std   min    5%  50%   95%    max
+DURATION                                                 
+1         300.0  -0.2  22.0 -70.2 -25.4 -0.9  32.6  171.0
+2         300.0   0.6  20.3 -71.3 -26.8 -0.6  30.9  119.5
+3         300.0   1.1  15.3 -39.7 -18.2 -0.7  24.9  113.2
+4         300.0  -0.5  13.9 -66.5 -19.6 -0.6  21.4   57.6
+
+Pooled placebo bias: +0.63%  (systematic error of the counterfactual)
+
+==========================================================================================
+3. EVENT-LEVEL INCREMENTALITY
+==========================================================================================
+Events: 1,149 total | in scope: 1,068 (>= 20 stores promoting, all weeks with good data coverage)
+Pre-period check (4 weeks before events, should be ~0): +3.9%
+
+POOLED RESULTS (1068 events)
+  Actual units in promotion weeks : 16,130,249
+  Counterfactual units             : 5,070,598
+  Gross lift                       : +218.1%  (90% CI +184.9% to +250.5%)
+     bias-adjusted (placebo)       : +216.1%
+  Post-promotion dip (4 weeks)     : 42,952 units = +0.8% of counterfactual
+     = -0.4% of the gross lift is borrowed from later weeks
+  Net incremental                  : +219.0%  (90% CI +185.2% to +251.7%)
+
+  Post-promotion dip: measured against the counterfactual on clean weeks, sales after an
+  event are close to their expected level. The ~7% post-event decline seen in Phase 4 (vs. the
+  PRE-event level) is largely explained by factors the baseline already models (season, Lent
+  ending, competitor promotions, price) — not by the event itself. Partial-promotion weeks
+  after events (price still low) are excluded, so a small dip there cannot be ruled out.
+
+Events with a significant lift (90% interval above 0): 68.7%
+
+Concentration of the effect:
+  Top 5% of events (53) produce 56.0% of all net incremental units
+  Top 10% of events (107) produce 72.2% of all net incremental units
+  Top 25% of events (267) produce 89.6% of all net incremental units
+  Median event: lift +49.6%  |  pooled (units-weighted) lift is dominated by a few
+  deep, Lent-time price cuts on the best-selling cans (see top events below).
+Event-level lift % distribution:
+count     1068.0
+mean       231.1
+std        875.7
+min        -64.8
+10%          2.1
+25%         22.4
+50%         49.6
+75%        142.1
+90%        379.0
+max      14098.1
+
+==========================================================================================
+4. BREAKDOWNS (pooled within group; 90% CI by bootstrap over events)
+==========================================================================================
+
+By PROMO_KIND:
+                         events  gross_lift_%       lift_90ci  post_dip_%_of_cf  net_lift_%        net_90ci  share_significant_%
+PROMO_KIND                                                                                                                      
+deal code, no price cut     530          48.4    [40.3, 56.2]               0.6        48.9    [40.7, 57.4]                 46.2
+price promotion             538         316.1  [268.1, 369.8]               1.0       317.1  [268.9, 371.0]                 90.9
+
+By DEPTH_BUCKET:
+              events  gross_lift_%        lift_90ci  post_dip_%_of_cf  net_lift_%         net_90ci  share_significant_%
+DEPTH_BUCKET                                                                                                           
+<5%              515          43.9     [38.0, 50.1]               0.9        44.8     [38.2, 51.9]                 44.7
+5-10%            251          80.7     [70.0, 91.7]              -0.7        80.0     [68.9, 91.4]                 83.3
+10-20%           190         263.9   [217.3, 317.3]               2.1       266.0   [218.9, 320.0]                 96.3
+>=20%            112         844.9  [638.9, 1081.0]               1.0       845.9  [641.1, 1080.9]                100.0
+  [figure] reports/phase6/figures/lift_by_depth.png
+
+By BRAND_GROUP:
+                    events  gross_lift_%       lift_90ci  post_dip_%_of_cf  net_lift_%        net_90ci  share_significant_%
+BRAND_GROUP                                                                                                                
+Bumble Bee             286         228.0  [165.9, 303.5]              -1.4       226.6  [164.7, 301.5]                 68.9
+Chicken of the Sea     346         270.7  [187.7, 372.3]               1.1       271.8  [188.5, 373.3]                 58.7
+Dominick's             100         159.6  [124.1, 208.7]              13.7       173.3  [136.8, 226.5]                 87.0
+Other                   90          54.8    [47.4, 63.1]              -1.4        53.3    [45.5, 62.5]                 73.3
+StarKist               246         240.0  [185.4, 294.4]              -0.8       239.2  [184.2, 293.6]                 73.6
+
+By DURATION_WEEKS:
+                events  gross_lift_%       lift_90ci  post_dip_%_of_cf  net_lift_%        net_90ci  share_significant_%
+DURATION_WEEKS                                                                                                         
+1                  358         568.8  [390.4, 751.2]               8.1       576.9  [397.2, 760.1]                 59.8
+2                  248         326.5  [238.3, 418.2]              -3.1       323.4  [235.8, 415.8]                 62.1
+3                  160         111.3   [92.8, 130.7]               2.1       113.3   [95.1, 132.4]                 77.5
+4                  123         133.2   [86.9, 187.0]               0.2       133.4   [87.4, 186.9]                 74.8
+5+                 179         111.1   [90.8, 130.5]              -0.1       111.0   [90.4, 130.4]                 83.8
+
+By LENT:
+          events  gross_lift_%       lift_90ci  post_dip_%_of_cf  net_lift_%        net_90ci  share_significant_%
+LENT                                                                                                             
+Lent         266         380.8  [281.4, 504.3]              -0.7       380.1  [279.6, 504.5]                 71.4
+not Lent     802         163.7  [142.8, 188.4]               1.4       165.0  [144.0, 190.5]                 67.8
+
+By store PRICE_TIER (store-level sums over in-scope events):
+             gross_lift_%  post_dip_%_of_cf  net_lift_%  mean_depth_%
+TIER                                                                 
+Cub-Fighter         154.7              -0.9       153.8           4.0
+High                254.5               2.1       256.6           9.4
+Low                 196.2               1.6       197.8           5.7
+Medium              221.4               0.3       221.7           7.0
+unknown             237.8               2.9       240.7           6.9
+
+Note: Lent and promotion depth are correlated with each other and with brand;
+these breakdowns are descriptive. Phase 7 (causal) separates the effects.
+
+==========================================================================================
+5. TOP AND BOTTOM EVENTS (in scope, by net incremental units)
+==========================================================================================
+Top 8:
+ EVENT_ID              DESCRIP START_DATE  DURATION_WEEKS  STORES  MEAN_DEPTH      PROMO_KIND  LIFT_PCT  LIFT_PCT_LO90  LIFT_PCT_HI90  NET_INCREMENTAL_UNITS
+      283 C O S CHUNK LIGHT TU 1991-02-21               1      81        0.68 price promotion  12326.33        9270.42       16564.65              436183.35
+      302 C O S CHUNK LIGHT TU 1993-02-25               1      85        0.51 price promotion  14098.13       10606.50       18940.76              378894.45
+      693 STAR K CH LT TUNA WA 1991-02-07               2      83        0.26 price promotion   2231.67        1680.96        3083.29              320602.98
+      292 C O S CHUNK LIGHT TU 1992-03-12               1      81        0.53 price promotion  10783.53        8107.03       14495.64              317211.88
+      690 STAR K CH LT TUNA WA 1990-09-20               2      79        0.15 price promotion   1415.63        1057.66        1969.20              268047.04
+      273 C O S CHUNK LIGHT TU 1990-02-22               1      47        0.19 price promotion   5659.49        4243.11        7623.91              250455.64
+     1084 BUM BEE/WATER CHK LI 1996-01-04               2      76        0.38 price promotion   4997.88        3793.83        6859.83              239817.62
+      685 STAR K CH LT TUNA WA 1990-03-01               4      69        0.29 price promotion   1175.96         951.41        1487.21              235345.56
+
+Bottom 8:
+ EVENT_ID              DESCRIP START_DATE  DURATION_WEEKS  STORES  MEAN_DEPTH              PROMO_KIND  LIFT_PCT  LIFT_PCT_LO90  LIFT_PCT_HI90  NET_INCREMENTAL_UNITS
+     1059 BUM BEE/WATER CHK LI 1992-10-08               1      49       -0.18 deal code, no price cut    -39.44         -54.34         -18.79               -4453.96
+      702 STAR K CH LT TUNA WA 1992-02-27               1      60        0.03 deal code, no price cut    -27.27         -45.15          -2.46               -3394.07
+      705 STAR K CH LT TUNA WA 1992-09-03               1      42       -0.05 deal code, no price cut    -22.65         -41.67           3.73               -3299.66
+     1051 BUM BEE/WATER CHK LI 1991-08-08               2      66       -0.01 deal code, no price cut     -8.38         -30.02          25.08               -2758.33
+      976 BUM BEE CHUNK WHT WA 1990-09-20               1      78        0.04 deal code, no price cut    -16.68         -37.17          11.74               -2056.08
+      456 C O S CHUNK LIGHT TU 1990-09-06               2      80        0.00 deal code, no price cut     -2.49         -25.52          33.13               -1946.02
+      176  ~COS SOLID WH. TUNA 1991-06-13               2      83        0.02 deal code, no price cut    -48.65         -60.78         -29.90               -1921.34
+     1088 BUM BEE OIL CHK LITE 1989-12-28               2      75        0.00 deal code, no price cut    -12.84         -33.43          19.00               -1655.70
+  [figure] reports/phase6/figures/event_example_actual_vs_counterfactual.png
+  [figure] reports/phase6/figures/lift_distribution_vs_placebo.png
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data/processed/tna_event_incrementality.csv   (1,149 events)
+data/processed/tna_counterfactual_rows.parquet (1,052,818 rows)
+
+==========================================================================================
+DONE
+==========================================================================================

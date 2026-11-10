@@ -1,0 +1,412 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 2 DATA CLEANING — category 'sdr' (Soft Drinks (carbonated))
+==========================================================================================
+Movement file: C:\Users\HPI\PycharmProjects\PromoGuard-AI\data\raw\dominicks\sdr\wsdr.zip
+
+==========================================================================================
+R9 — CATEGORY SCOPE
+==========================================================================================
+SUBCATEGORY
+csd                781
+iced_tea            34
+lemonade_punch      63
+out_of_scope       841
+sports_drink        10
+variety_or_code     10
+water                7
+Keeping 905 of 1746 UPCs (SUBCATEGORY != 'out_of_scope')
+Movement rows read (in scope): 12,931,604
+
+==========================================================================================
+STEP 1 — ROW FILTERS (waterfall)
+==========================================================================================
+  raw rows                                                       12,931,604
+  R1 drop OK == 0 (flagged as trash by Kilts)                       195,907
+  R2 drop PRICE == 0 & MOVE == 0 (no sale, no price)              4,539,586
+  R3 drop PRICE <= 0 & MOVE > 0 (invalid)                                 0
+  rows kept                                                       8,196,111  (63.4% of raw)
+
+  Remaining rows with MOVE == 0 and PRICE > 0: 0
+  -> the raw data never records a zero-sales week together with a price.
+
+==========================================================================================
+STEP 2 — DERIVED MEASURES (R4-R6)
+==========================================================================================
+UNIT_PRICE = PRICE / QTY ; DOLLARS = PRICE * MOVE / QTY ; GROSS_PROFIT = DOLLARS * MARGIN_PCT / 100
+Total dollar sales  : $447,847,563
+Total gross profit  : $38,289,304  (average margin 8.5%)
+
+DEAL_CODE counts after cleaning:
+DEAL_CODE
+NONE    5568980
+S       1394943
+B       1131125
+G         65845
+C         35218
+
+==========================================================================================
+STEP 3 — QUALITY FLAGS (R7: flagged, NOT removed)
+==========================================================================================
+NEG_MARGIN_FLAG   : 1,307,050 rows (15.95%)
+EXTREME_MARGIN_FLAG: 8,548 rows (MARGIN_PCT >= 95, cost near zero)
+MOVE_OUTLIER_FLAG : 17,843 rows (0.218%)  [robust z of log(1+MOVE) > 5.0 within UPC-store, and MOVE >= 100]
+
+Deal code mix — all rows vs. negative-margin rows vs. outlier rows (% of rows):
+            all  neg_margin  outlier
+DEAL_CODE                           
+B          13.8        21.0     23.5
+C           0.4         0.2      2.3
+G           0.8         2.5      2.8
+NONE       67.9        39.2     31.2
+S          17.0        37.1     40.3
+
+15 largest flagged MOVE values:
+       UPC  STORE  WEEK  MOVE  UNIT_PRICE  MARGIN_PCT DEAL_CODE
+4900000634    100   371 10291        0.89      -39.62         B
+1200000013      8   336  9043        2.49       34.50         S
+1200000013    111    77  8903        1.19       87.39         S
+3828100253     21    21  8583        0.10       48.00         B
+4900000634    133   371  8417        0.89      -39.87         B
+4900000634     74   371  8382        0.89      -39.80         B
+4900000634      8   371  8081        0.89      -39.79         B
+4900000634    102   371  7987        0.89      -39.68         B
+4900000634     78   371  7938        0.89      -39.85         B
+4900000634    128   371  7671        0.89      -39.53         B
+4900000634    123   371  7362        0.89      -39.37         B
+4900000634     71   371  7354        0.89      -39.88         B
+4900000634     70   371  7311        0.89      -39.05         B
+4900000634     68   371  7203        0.89      -39.68         B
+4900000634    135   371  7194        0.89      -39.63         B
+
+==========================================================================================
+STEP 4 — PRODUCT TABLE AND PRODUCT_ID (R8)
+==========================================================================================
+UPC pairs sharing an NITEM: 211 | linked into one PRODUCT_ID: 116
+Distinct UPCs: 905 -> distinct PRODUCT_IDs: 789
+csd: 781 UPCs -> 675 PRODUCT_IDs
+
+All NITEM pairs and the decision (review this table):
+ ANCHOR_UPC        UPC          ANCHOR_DESC                 DESC ANCHOR_SIZE   SIZE  SAME_ATTRIBUTES  SIZE_OK  CONCURRENT_SHARE  LINKED
+        475 7840008900  WLWD FULL CASE CODE  WLWD FULL CASE CODE      24/12O 24/12O             True     True             0.000    True
+        470 3828100357 DOMINICK'S CASE 12OZ DOMINICK'S CASE 12OZ      24/12O 24/12O             True     True             0.502   False
+ 3828100207 7840090003 DOMINICK'S COLA 3 LT         GENERIC COLA        3 LT   2 LT             True    False             0.000   False
+ 3828100315 7840090010  DOM LEMON LIME SODA     GENERIC ROOTBEER        3 LT   2 LT            False    False             0.000   False
+ 3828100211 7840090012 DOM ORANGE SODA 3 LT        GENERIC GRAPE        3 LT   2 LT            False    False             0.000   False
+ 4117517280 4117517286 PS DIET CAFF FREE CO         PS DIET COLA      6/12OZ 6/12OZ             True     True             0.442   False
+        465 7840008803  CANFIELDS COLA 24PK  CANFIELDS COLA 24PK      24/12O 24/12O             True     True             0.116    True
+ 4640012000        463  SUNKIST FLAVOR PACK  SUNKIST FLAVOR PACK      24/12O 24/12O             True     True             0.228   False
+ 4640012000        466  SUNKIST FLAVOR PACK  CANFIELDS DIET COLA      24/12O 24/12O            False     True             0.000   False
+ 4640012000 7840008853  SUNKIST FLAVOR PACK  CANFIELDS DIET COLA      24/12O 24/12O            False     True             0.000   False
+        464 7840000177    CANFIELD FUN PACK    CANFIELD FUN PACK      24/12O 24/12O             True     True             0.091    True
+        462 7840008800       CANFIELD 50/50       CANFIELD 50/50      24/12O 24/12O             True     True             0.252   False
+ 1690012951        461     CAN DRY GNGR ALE     CAN DRY GNGR ALE      24/12O 24/12O             True     True             0.497   False
+        460 4640010143       SUNKIST ORANGE       SUNKIST ORANGE      24/12O 24/12O             True     True             0.483   False
+ 7840000103 7840000179 CANFIELDS PINK 50/50 CLEARLY CANFIELD PEA        2 LT   2 LT            False     True             0.000   False
+ 7840000126 7840000187 CANFIELDS SW CRM RAS CLEARLY CANFIELD LIM        2 LT   2 LT             True     True             0.000    True
+ 4171011298 4640010249         ORANGE CRUSH SUNKIST LEMONADE N.R      3 LITE  20 OZ            False    False             0.000   False
+ 8381700054 7840000719                 KAYO CANFIELDS KIWI STRAW      6/11.5 6/12OZ            False    False             0.000   False
+ 4640010255 7840000726     SUNKIST LEMONADE CANFIELDS SW CRM RAS        2 LT   6 CT            False    False             0.000   False
+ 4640054081 4640010132       SUNKIST ORANGE       SUNKIST ORANGE        2 LT   2 LT             True     True             0.001    True
+ 4900002217 4900000554          CHERRY COKE          CHERRY COKE      8/20OZ 8/20OZ             True     True             0.005    True
+ 4900000570 4900000162      CLASSIC COKE NR      CLASSIC COKE NR      8/20OZ 8/20OZ             True     True             0.006    True
+ 4900000571 4900000164         DIET COKE NR         DIET COKE NR      8/20OZ 8/20OZ             True     True             0.006    True
+ 4900000553 4900000172        COKE C/F DIET        COKE C/F DIET      8/20OZ 8/20OZ             True     True             0.006    True
+ 4900000669 4900000174               SPRITE          SPRITE N.R.      8/20OZ 8/20OZ             True     True             0.005    True
+ 7170210328 4900002420     BARQ'S ROOT BEER     BARQ'S ROOT BEER      8/20OZ 8/20OZ             True     True             0.020    True
+ 7170210328 7170210320     BARQ'S ROOT BEER  BARQ'S RT BEER 8/20      8/20OZ 8/20OZ             True     True             0.008    True
+ 4900000984 4900000927     SPRITE DIET CANS     SPRITE DIET CANS      12/12O 12/12O             True     True             0.004    True
+ 4900000636 4900001252   COKE CLASSICS CANS   COKE CLASSICS CANS      12/12O 12/12O             True     True             0.012    True
+ 4900000968 4900001020 CAFFEINE FREE DIET C CAFFEINE FREE DIET C      12/12O 12/12O             True     True             0.007    True
+ 4900000983 4900000600          SPRITE CANS          SPRITE CANS      12/12O 12/12O             True     True             0.004    True
+ 4900000981 4900000914      ~DIET COKE CANS      ~DIET COKE CANS      12/12O 12/12O             True     True             0.011    True
+ 7170210367 7170223367     BARQ'S ROOT BEER BARQ'S RT BR PPD .99        2 LT   2 LT             True     True             0.032    True
+ 7170210367 4900002395     BARQ'S ROOT BEER     BARQ'S ROOT BEER        2 LT   2 LT             True     True             0.034    True
+ 7170210367 4900002385     BARQ'S ROOT BEER     BARQ'S ROOT BEER        2 LT   2 LT             True     True             0.049    True
+ 7170240212 4900002398  BARQ DIET ROOT BEER  BARQ DIET ROOT BEER      6/12OZ 6/12OZ             True     True             0.019    True
+ 7170240367 7170226367    BARQ DT ROOT BEER     BARQS DT PPD$.99        2 LT   2 LT             True     True             0.016    True
+ 7170240367 4900002403    BARQ DT ROOT BEER  BARQ'S DIET RT BEER        2 LT   2 LT             True     True             0.030    True
+ 4900000036 4900001885   CHERRY COKE PP$.99 CHERRY COKE PPD $.99        2 LT   2 LT             True     True             0.020    True
+ 7686000235 7686000078          WELCHS SODA     WELCH'S GRAPE PP        2 LT   2 LT            False     True             0.006   False
+ 7686000082 7686000251 WELCH'S STRAWBERRY P WELCH'S STRAWBERRY P        2 LT   2 LT             True     True             0.007    True
+ 4900001386 4900001884           BRAND COKE COKE II 2LTR PPD $.9        2 LT   2 LT             True     True             0.030    True
+ 4900000726 4900001888          MELLO YELLO MELLO YELLOW PPD .99        2 LT   2 LT             True     True             0.004    True
+ 4900000550 4900001405         TAB PPD $.99                    b        2 LT   2 LT            False     True             0.010   False
+ 4900000170 4900001886 MIN MAID ORANGE PP$.   MINUTE MAID ORANGE        2 LT   2 LT             True     True             0.031    True
+ 4900000170 4900001478 MIN MAID ORANGE PP$.    MINUTE MAID ORANG        2 LT   2 LT            False     True             0.042   False
+ 4900000170 8390000037 MIN MAID ORANGE PP$.          NESTEA COOL        2 LT   2 LT            False     True             0.000   False
+ 4900001887 4900001827    MINUTE MAID PUNCH MIN MAID FRUIT PUNCH        2 LT   2 LT             True     True             0.001    True
+ 7686000020        481   WELCH'S GRAPE SODA   WELCH'S GRAPE SODA      24/12O 24/12O             True     True             0.000    True
+        482 7686000347 WELCH'S STRAWBERRY S WELCH'S STRAWBERRY S      24/12O 24/12O             True     True             0.000    True
+ 4900001906 4900000522 DIET COKE 1LTR PP .7            DIET COKE        1 LT   1 LT             True     True             0.000    True
+ 4900001906 4900000664 DIET COKE 1LTR PP .7            DIET COKE        1 LT   1 LT             True     True             0.001    True
+ 4900001905 4900000642 COKE CLASSIC 1 LTR P         COKE CLASSIC        1 LT   1 LT             True     True             0.000    True
+ 4900001905 4900000142 COKE CLASSIC 1 LTR P COKE CLASSIC 1 LTR P        1 LT   1 LT             True     True             0.000    True
+ 4900001907 4900002319  SPRITE 1 LTR PP .79               SPRITE        1 LT   1 LT             True     True             0.000    True
+ 4900001907 4900000579  SPRITE 1 LTR PP .79               SPRITE        1 LT   1 LT             True     True             0.000    True
+ 4900000303        457 CAFF FREE CLASSIC CO CAFF FREE CLASSIC CO      24/12O 24/12O             True     True             0.449   False
+ 4900000459        454          SPRITE DIET          SPRITE DIET      24/12O 24/12O             True     True             0.571   False
+ 4900001278        450    COKE CLASSIC CANS    COKE CLASSIC CANS      24/12O 24/12O             True     True             0.664   False
+        456 7170210213     BARQ'S ROOT BEER     BARQ'S ROOT BEER      24/12O 24/12O             True     True             0.410   False
+        456 4900002426     BARQ'S ROOT BEER     BARQ'S ROOT BEER      24/12O 24/12O             True     True             0.143    True
+ 4900001063        451       DIET COKE CANS       DIET COKE CANS      24/12O 24/12O             True     True             0.642   False
+ 4900001178        455  COCA COLA CAFF-FREE  COCA COLA CAFF-FREE      24/12O 24/12O             True     True             0.540   False
+        452 4900000070              COKE II    COKE CLASSIC CANS      24/12O 24/12O             True     True             0.480   False
+ 4900000189        459             TAB CANS             TAB CANS      24/12O 24/12O             True     True             0.554   False
+ 7170240213        458      DIET BARQS CANS      DIET BARQS CANS      24/12O 24/12O             True     True             0.288   False
+ 7170240213 4900002425      DIET BARQS CANS      DIET BARQS CANS      24/12O 24/12O             True     True             0.004    True
+ 4900001387        449          CHERRY COKE          CHERRY COKE      24/12O 24/12O             True     True             0.275   False
+ 7143400005 7143400725  VERNORS DIET GINGER  VERNORS DIET GINGER      6/12OZ 6/12OZ             True     True             0.006    True
+ 7143400081 7143418599   VERNORS GINGER ALE   VERNORS GINGER ALE        2 LT   2 LT             True     True             0.003    True
+ 7143400081 7143400085   VERNORS GINGER ALE   VERNORS GINGER ALE        2 LT   2 LT             True     True             0.015    True
+ 7143400721 7143472599  VERNORS DIET GINGER  DIET VERNORS GINGER        2 LT   2 LT             True     True             0.012    True
+ 4900000640 8390000152     COKE CLASSIC N/R          NESTEA COOL      4/16OZ 24/12O            False    False             0.000   False
+ 4900000989 8390000031        DIET COKE N/R          NESTEA COOL      4/16OZ 6/12OZ            False    False             0.000   False
+ 7170210244 4900002386    ~BARQ'S ROOT BEER    ~BARQ'S ROOT BEER      12/12O 12/12O             True     True             0.022    True
+ 7170240244 4900002399  DT BARQ'S ROOT BEER  DT BARQ'S ROOT BEER      12/12O 12/12O             True     True             0.017    True
+ 7241004640 7241004670  DAD'S ROOT BEER 8PK DAD'S ROOT BEER NR B      8/20OZ 8/20OZ             True     True             0.001    True
+ 4900001968 4900001964  PEPSI SINGL SERV 20 SINGLE SERVE UPC COD       20 OZ  16 OZ            False    False             0.016   False
+ 4900001968 8390000182  PEPSI SINGL SERV 20          NESTEA COOL       20 OZ  20 OZ            False     True             0.000   False
+ 1200000524        423  DIET PEPSI CAFFEINE  DIET PEPSI CAFFEINE      24/12O 24/12O             True     True             0.521   False
+ 1200000519        422  PEPSI CAFFEINE FREE  PEPSI CAFFEINE FREE      24/12O 24/12O             True     True             0.512   False
+ 1200000088        426         MOUNTAIN DEW         MOUNTAIN DEW      24/12O 24/12O             True     True             0.610   False
+ 1200000170        427    DIET MOUNTAIN DEW    DIET MOUNTAIN DEW      24/12O 24/12O             True     True             0.542   False
+ 5020014571        424   HAWAIIAN PUNCH RED   HAWAIIAN PUNCH RED      24/12O 24/12O             True     True             0.545   False
+ 7241009360        425       DADS ROOT BEER       DADS ROOT BEER      24/12O 24/12O             True     True             0.420   False
+ 1200000884 1200000791           SLICE CANS           SLICE CANS      12/12O 12/12O             True     True             0.003    True
+ 1200000885 1200000810      SLICE DIET CANS      SLICE DIET CANS      12/12O 12/12O             True     True             0.001    True
+ 1200000017        420      PEPSI COLA CANS      PEPSI COLA CANS      24/12O 24/12O             True     True             0.685   False
+ 1200000053        421      PEPSI DIET CANS      PEPSI DIET CANS      24/12O 24/12O             True     True             0.634   False
+ 1200000491 1200000847  PEPSI CAFFEINE FREE  PEPSI CAFFEINE FREE      12/12O 12/12O             True     True             0.008    True
+ 1200000495 1200000848  DIET PEPSI CAFFEINE  DIET PEPSI CAFFEINE      12/12O 12/12O             True     True             0.010    True
+ 7241009350 7241009370   DADS ROOT BEER CAN   DADS ROOT BEER CAN      12/12O 12/12O             True     True             0.003    True
+ 1200000583        419 ~CRYSTAL PEPSI 24 PA ~CRYSTAL PEPSI 24 PA      24/12O 24/12O             True     True             0.002    True
+ 1200000583 7241009850 ~CRYSTAL PEPSI 24 PA  DIET DADS ROOT BEER      24/12O 12/12O            False    False             0.000   False
+ 1200000016 1200000844      PEPSI COLA CANS      PEPSI COLA CANS      12/12O 12/12O             True     True             0.029    True
+ 1200000190 1200000845      PEPSI DIET CANS      PEPSI DIET CANS      12/12O 12/12O             True     True             0.013    True
+ 1200000190 1200000090      PEPSI DIET CANS      PEPSI DIET CANS      12/12O 12/12O             True     True             0.008    True
+ 1200000225 1200000846    MOUNTAIN DEW CANS    MOUNTAIN DEW CANS      12/12O 12/12O             True     True             0.007    True
+ 5020000745 2400000745    HAWIIAN PUNCH N/R  HAWAIIAN PUNCH CANS      6/12OZ 6/12OZ             True     True             0.005    True
+ 1200000577 1200000570  ~CRYSTAL PEPSI N.R.   CRYSTAL PEPSI N.R.      8/20OZ 8/20OZ             True     True             0.007    True
+ 1200000578 1200000571  ~CRYSTAL DIET PEPSI CRYSTAL DIET PEPSI N      8/20OZ 8/20OZ             True     True             0.006    True
+ 7241004950 7241004960    DADS ROOT BEERPPD    DADS ROOT BEERPPD        2 LT   2 LT             True     True             0.080    True
+ 7241006950 7241006960 DAD'S DIET ROOT BEER  DIET DADS ROOT BEER        2 LT   2 LT             True     True             0.081    True
+ 1200000801 1200000472 LEMON LIME SLICE PPD LEMON LIME SLICE PPD        2 LT   2 LT             True     True             0.100    True
+ 1200000820 1200000473 DIET LEMON LIME SLIC DIET LEMON LIME SLIC        2 LT   2 LT             True     True             0.102    True
+ 1200000863 1200000455     ORANGE SLICE PPD     ORANGE SLICE PPD        2 LT   2 LT             True     True             0.104    True
+ 1200000457 1200000856 SLICE MANDARIN ORANG SLICE MANDARIN ORANG      12/12O 12/12O             True     True             0.002    True
+ 1200000878 1200000456 DIET ORANGE SLICE PP DIET ORANGE SLICE PP        2 LT   2 LT             True     True             0.116    True
+ 1200000458 1200000871 SLICE MANDARIN ORANG SLICE MANDARIN ORANG      12/12O 12/12O             True     True             0.004    True
+ 7181704029        429              BIG RED              BIG RED      24/12O 24/12O             True     True             0.153    True
+ 1200010798 1200010799    WILD CHERRY PEPSI    WILD CHERRY PEPSI      24/12O 24/12O             True     True             0.003    True
+ 7297900264        487 SEAGRAM'S GINGER ALE SEAGRAM'S GINGER ALE      24/12O  24 EA             True    False             0.315   False
+ 1200000792        485     SLICE LEMON-LIME     SLICE LEMON-LIME      24/12O 24/12O             True     True             0.297   False
+ 1200010402        486         SLICE ORANGE         SLICE ORANGE      24/12O  24 EA             True    False             0.211   False
+ 5080021267 5080021567     SQUIRT DIET CANS DIET SQUIRT 12+3 BON      12/12O 15/12O            False    False             0.007   False
+ 5080021257 5080021557          SQUIRT CANS          SQUIRT CANS      12/12O 12/12O             True     True             0.010    True
+ 5490003506 5490003034       DIET DR PEPPER  DIET DR PEPPER 12+3        CANS 15/12O            False    False             0.041   False
+ 7800001080 7800000148        SEVEN-UP CANS        SEVEN-UP CANS      12/12O 12/12O             True     True             0.015    True
+ 7800001080 7800001003        SEVEN-UP CANS        SEVEN-UP CANS      12/12O 12/12O             True     True             0.022    True
+ 7800001168 7800000149   DIET SEVEN-UP CANS   DIET SEVEN-UP CANS      12/12O 12/12O             True     True             0.007    True
+ 7800001168 7800001006   DIET SEVEN-UP CANS        DIET 7UP 15PK      12/12O 15/12O            False    False             0.041   False
+ 5490003007 5490003033      DR. PEPPER CANS  DR PEPPER 12+3 FREE      12/12O 15/12O            False    False             0.031   False
+ 4300095290        448 COUNTRYTIME LEMONADE COUNTRYTIME LEMONADE      24/12O 24/12O             True     True             0.220   False
+ 7800000531 7800000544          CHERRY 7-UP          CHERRY 7-UP        2 LT   2 LT             True     True             0.154    True
+ 7800000831 7800000844     DIET CHERRY 7-UP     DIET CHERRY 7-UP        2 LT   2 LT             True     True             0.127    True
+ 5490000075 5490000074    DR PEPPER 1 LITER    DR PEPPER 1 LITER        1 LT   1 LT             True     True             0.081    True
+ 4171080001 4171021798 $ORANGE CRUSH NR 8 P $ORANGE CRUSH NR 8 P      8/20OZ 8/20OZ             True     True             0.093    True
+ 5490010037 5490003035   DR PEP DT CAF FREE DIET CF DR PEPPER 12      12/12O 15/12O            False    False             0.030   False
+ 5080080007 5080060121          SQUIRT NR $          SQUIRT NR $      8/20OZ 8/20OZ             True     True             0.098    True
+ 5490000066 5490002050         DR PEPPER NR         DR PEPPER NR      6/16OZ 6/20 O             True    False             0.001   False
+ 5490000066 5490002073         DR PEPPER NR         DR PEPPER NR      6/16OZ 8/20OZ            False    False             0.000   False
+ 5490000024 5490000036    DIET DR PEPPER NR    DIET DR PEPPER NR      6/16OZ 8/20OZ            False    False             0.002   False
+ 5490000024 5490002076    DIET DR PEPPER NR    DIET DR PEPPER NR      6/16OZ 8/20OZ            False    False             0.000   False
+ 7800000021 7800000161    7-UP N.R. BOTTLES    7-UP N.R. BOTTLES      6/16OZ 8/20OZ            False    False             0.003   False
+ 7800000021 7800000103    7-UP N.R. BOTTLES    7-UP N.R. BOTTLES      6/16OZ 8/20OZ            False    False             0.000   False
+ 7800000062 7800000162     DT 7-UP 6/16 NRS DIET 7-UP N.R. BOTTL      6/16OZ 8/20OZ            False    False             0.001   False
+ 7800000062 7800000109     DT 7-UP 6/16 NRS DIET 7-UP N.R. BOTTL      6/16OZ 8/20OZ            False    False             0.000   False
+ 7800000062 7800000159     DT 7-UP 6/16 NRS DIET 7-UP N.R. BOTTL      6/16OZ 6/20 O             True    False             0.000   False
+ 7800005101 7800005118      SEVEN/UP CHERRY      SEVEN/UP CHERRY      12/12O 12/12O             True     True             0.009    True
+ 7800008101 7800008118 SEVEN-UP DIET CHERRY   DIET CHRY 7UP 12+3      12/12O 15/12O            False    False             0.023   False
+ 7840000021 7480000021 $CANFIELD DIET SWISS $CANFIELD DIET SWISS        2 LT   2 LT             True     True             0.000    True
+ 1660051312 1660051314 SCHWEPPES GINGER ALE SCHWEPPES GINGER ALE        2 LT   2 LT             True     True             0.026    True
+ 1660051196        490 SCHWEPPES GINGER ALE SCHWEPPES GINGER ALE      24/12O 24/12O             True     True             0.280   False
+ 1660051219 1660052124  SCHWEPPES DIET RASP SCHWEPPES DIET RSPBR        2 LT   2 LT             True     True             0.020    True
+        439 2950007574        UPPER 10 24PK        UPPER 10 24PK      24/12O 24/12O             True     True             0.172    True
+ 2950021574        495     NEHI GRAPE 24 PK     NEHI GRAPE 24 PK      24/12O 24/12O             True     True             0.231   False
+ 2950020574        436 NEHI FLAVORS / UPPER NEHI FLAVORS / UPPER      24/12O 24/12O             True     True             0.160    True
+ 2950020254 2950035254          NEHI ORANGE          NEHI ORANGE        9 CT   9 CT             True    False             0.123   False
+ 2950020254 2950007254          NEHI ORANGE          NEHI ORANGE        9 CT   9 CT             True    False             0.019   False
+ 2950090932 2950090933   DIET RITE LEMONADE   DIET RITE LEMONADE        2 LT   2 LT             True     True             0.102    True
+ 2950051933 2950051932 DIET RITE CRAN APPLE DIET RITE CRAN APPLE        2 LT   2 LT             True     True             0.095    True
+ 2950020933 2950020932  NEHI ORANGE PPD .99  NEHI ORANGE PPD .99        2 LT   2 LT             True     True             0.011    True
+ 2950021933 2950021932   NEHI GRAPE PPD .99   NEHI GRAPE PPD .99        2 LT   2 LT             True     True             0.019    True
+ 2950035933 2950035932     NEHI FRUIT PUNCH NEHI FRUIT PUNCH PPD        2 LT   2 LT             True     True             0.023    True
+ 2950089932 2950094932 DIET RITE KIWI STRAW DIET RITE PASSION PL        2 LT   2 LT             True     True             0.537   False
+ 2950089932 2950094933 DIET RITE KIWI STRAW DIET RITE PASSION PL        2 LT   2 LT             True     True             0.070    True
+ 2950001933 2950000069     RC COLA PPD $.99            R.C. COLA        2 LT   2 LT             True     True             0.129    True
+ 2950082932 2950093932 DIET RITE GRAPE-FRUI DIET RITE FRUIT PUNC        2 LT   2 LT             True     True             0.008    True
+ 2950082932 2950093933 DIET RITE GRAPE-FRUI DIET RITE FRUIT PUNC        2 LT   2 LT             True     True             0.002    True
+ 2950080932 2950080933  DIET RITE TANGERINE  DIET RITE TANGERINE        2 LT   2 LT             True     True             0.079    True
+ 2950085932 2950085933 DIET RITE RED RASPBR DIET RITE RED RASPBE        2 LT   2 LT             True     True             0.069    True
+ 7747010201 7747020199        A W CREAM REG A&W CREAM SODA PPD $        2 LT   2 LT            False     True             0.049   False
+ 2950005932 2950005933 DIET RITE COLA PP.99 DIET RITE COLA PP.99        2 LT   2 LT             True     True             0.153    True
+ 7747010202 7747020299       A W CREAM DIET  A&W DIET CREAM SODA        2 LT   2 LT            False     True             0.049   False
+ 7020211704 7020270499     A W ROOT BEER SF A&W RT BEER DT PPD $        2 LT   2 LT            False     True             0.075   False
+ 7020211703 7020270399      A W RT BEER REG  A&W RT BEER REG PPD        2 LT   2 LT             True     True             0.117    True
+ 2950086932 2950086933      DIET RITE PEACH DIET RITE GOLDEN PEA        2 LT   2 LT             True     True             0.040    True
+ 2950081932 2950081933 DIET RITE WHITE GRAP DIET RITE WHITE GRAP        2 LT   2 LT             True     True             0.110    True
+ 5080020457        447          SQUIRT SODA          SQUIRT SODA      24/12O 24/12O             True     True             0.229   False
+ 4171011341        445        $ORANGE CRUSH         ORANGE CRUSH      24/12O 24/12O             True     True             0.328   False
+ 4171011349        446         ORANGE CRUSH         ORANGE CRUSH      24/12O 24/12O             True     True             0.031    True
+ 7800001214        440                 7-UP                 7-UP      24/12O 24/12O             True     True             0.582   False
+ 7800001234        441            DIET 7-UP            DIET 7-UP      24/12O 24/12O             True     True             0.476   False
+ 5490003019        442           DR. PEPPER           DR. PEPPER      24/12O 24/12O             True     True             0.551   False
+ 5490073508        443       DIET DR PEPPER       DIET DR PEPPER      24/12O 24/12O             True     True             0.499   False
+ 5490073508 5400073508       DIET DR PEPPER       DIET DR PEPPER      24/12O 24/12O             True     True             0.011    True
+ 7800000551        444          CHERRY 7 UP          CHERRY 7 UP      24/12O 24/12O             True     True             0.423   False
+ 4154500084 4154500035    NU GRAPE SODA PPD    NU GRAPE SODA PPD        2 LT   2 LT             True     True             0.005    True
+ 2950000065 2950007312 DIET RITE VARIETY 24 UPPER 10 16 OZ. N.R.      24/12O  16 OZ            False    False             0.000   False
+        432 2950002574     DIET R.C. (CANS)     DIET R.C. (CANS)      24/12O 24/12O             True     True             0.203   False
+ 2950002932 2950002933            DIET R.C.      DIET R.C. PP.99        2 LT   2 LT             True     True             0.114    True
+ 2950001574        430 ROYAL CROWN COLA 24P ROYAL CROWN COLA 24P      24/12O 24/12O             True     True             0.467   False
+ 2950005574        431  DIET RITE COLA 24PK  DIET RITE COLA CANS      24/12O 24/12O             True     True             0.540   False
+ 7020210105        435 A & W ROOT BEER 24PK      A & W ROOT BEER      24/12O 24/12O             True     True             0.204   False
+ 4100000815        428 LIPTON BRISK ICED TE LIPTON BRISK ICED TE      24/12O 24/12O             True     True             0.500   False
+ 4100000815        433 LIPTON BRISK ICED TE LIPTON BRISK ICED TE      24/12O 24/12O             True     True             0.209   False
+ 7020210106 7020210102  A&W DIET RT BR24 PK  A&W DIET RT BR24 PK      24/12O 24/12O             True     True             0.000    True
+        434 7747010105       A&W CREAM SODA       A&W CREAM SODA      24/12O 24/12O             True     True             0.130    True
+ 2950089254 1115605702 DIET RITE KIWI STRAW      TETLEY ICED TEA      6/12OZ   2 LT            False    False             0.000   False
+ 1115605386 2950083254 TETLEY ICED TEA W/LE DIET RITE MANGO MELO      12/12O 6/12OZ            False    False             0.000   False
+        437 1115605387 TETLEY ICED TEA W/LE TETLEY ICED TEA W/LE      24/12O 24/12O             True     True             0.002    True
+ 1115605390 1115605391      TETELY ICED TEA      TETELY ICED TEA      6/12OZ 6/12OZ             True     True             0.056    True
+ 2950091312 5020000126 DIET RITE KEY LIME N SUNNY DELIGHT BOTTLE       16 OZ  20 OZ            False    False             0.000   False
+ 5020000125 2950093312   SUNNY DELIGHT CANS DIET RITE FRUIT PUNC        6 CT  16 OZ            False    False             0.000   False
+ 5020000131 2950090312        SUNNY DELIGHT DIET RITE LEMONADE N      24 PAC  16 OZ            False    False             0.000   False
+ 5020000131        469        SUNNY DELIGHT        SUNNY DELIGHT      24 PAC 24 PAC             True    False             0.023   False
+ 2950080312 5020000130  DIET RITE TANGERINE $SUNNY DELIGHT 12 PA       16 OZ 12/12O            False    False             0.000   False
+ 1200000169 1200000376    DIET MOUNTAIN DEW    DIET MOUNTAIN DEW      12/12O 12/12O             True     True             0.010    True
+ 4900000129        453               SPRITE               SPRITE      24/12O 24/12O             True     True             0.597   False
+ 4900000272 4900000301             CAFFEINE CAFFEINE  FREE CLASS      FREE C 12/12O            False    False             0.006   False
+ 1200000394 1200000739 PEPSI COLA N.R. BOTT  DIET PEPSI SLAM CAN      8/16OZ  16 OZ            False    False             0.000   False
+ 1200000396 1200000749 DIET PEPSI N.R. BOTT MOUNTAIN DEW SLAM CA      8/16OZ  16 OZ            False    False             0.000   False
+ 2950083932 2950083933 DIET RITE MANGO MELO DIET RITE MANGO MELO        2 LT   2 LT             True     True             0.009    True
+ 1060866635        438 OLD TOWN ICE TEA 24P OLD TOWN ICE TEA 24P      24/12O 24/12O             True     True             0.124    True
+ 1200010694        488        MUG ROOT BEER        MUG ROOT BEER       24 PK  24 PK             True    False             0.354   False
+ 7802310185 7802341026 NATURALE 90 RASPNERR NATURALE 90 RASPBERR       10 OZ  10 OZ             True     True             0.015    True
+ 7802310183 7802341027 NATURALE 90 BLACKCHE NATURALE 90 BLACKCHE       10 OZ  10 OZ             True     True             0.020    True
+ 7802310187 7802341030 NATURALE 90 ROOTBEER NATURALE 90 ROOTBEER       10 OZ  10 OZ             True     True             0.018    True
+ 7802348527 7802342627 NATURALE 90 DIET BLK NATURALE 90 DIET BLK       10 OZ  10 OZ             True     True             0.026    True
+ 7802348526 7802342626 NAT 90 DIET RASBERRY NAT 90 DIET RASBERRY       10 OZ  10 OZ             True     True             0.036    True
+ 7802348533 7802342628 NAT 90 DIET CREAM SO NAT 90 DIET CREAM SO       10 OZ  10 OZ             True     True             0.000    True
+
+==========================================================================================
+STEP 5 — CATEGORY COMPOSITION (cleaned data)
+==========================================================================================
+                 UPCs  PRODUCTS        UNITS       DOLLARS  UNITS_%  DOLLARS_%
+SUBCATEGORY                                                                   
+csd               781       675  251357407.0  4.333485e+08     95.5       96.8
+lemonade_punch     63        58    7643593.0  6.181399e+06      2.9        1.4
+water               7         7    1653786.0  1.039379e+06      0.6        0.2
+iced_tea           34        31    1528467.0  3.881831e+06      0.6        0.9
+variety_or_code    10         8    1079670.0  3.382137e+06      0.4        0.8
+sports_drink       10        10      28966.0  1.434004e+04      0.0        0.0
+
+csd units by MAKER (%):
+MAKER
+Other            29.6
+Private label    24.9
+PepsiCo          24.7
+Coca-Cola Co.    20.8
+
+csd units by BRAND (%):
+BRAND
+Dominick's      24.9
+Pepsi           21.2
+Coca-Cola       10.5
+Diet Coke        7.6
+7-Up             7.3
+Diet Rite        4.3
+RC Cola          3.7
+Sprite           2.2
+Dr Pepper        2.2
+Canada Dry       1.9
+Sunkist          1.8
+Slice            1.8
+A&W              1.7
+Mountain Dew     1.5
+Crush            1.1
+Other            0.9
+Dad's            0.9
+Squirt           0.7
+Schweppes        0.7
+Barq's           0.6
+Canfield's       0.5
+IBC              0.5
+Tab              0.3
+Seagram's        0.2
+Vernors          0.2
+
+csd units by SD_DIET (%):
+SD_DIET
+regular    67.5
+diet       32.5
+
+csd units by SD_FLAVOR (%):
+SD_FLAVOR
+cola           52.7
+lemon_lime     14.1
+root_beer       6.8
+orange          6.3
+ginger_ale      6.0
+other_fruit     5.0
+cream           2.9
+citrus          2.8
+pepper          2.2
+unknown         1.2
+
+csd units by SD_PACK (%):
+SD_PACK
+bottle_large        43.3
+single              21.2
+can_6pk             15.1
+can_24pk            10.1
+can_12pk             7.7
+bottle_multipack     2.5
+unknown              0.1
+
+==========================================================================================
+STEP 6 — CALENDAR (official week table from the manual)
+==========================================================================================
+Date range: 1989-09-14 -> 1997-05-07
+Rows in holiday weeks:
+HOLIDAY
+Easter            172227
+Christmas         171017
+Presidents Day    166349
+Thanksgiving      166057
+New-Year          166036
+Halloween         165383
+4th of July       158299
+Memorial Day      149769
+Labor Day         132500
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data\processed\sdr_products.csv  (905 products)
+data\processed\sdr_movement_clean.parquet  (8,196,111 rows x 19 columns)
+
+Columns: ['STORE', 'UPC', 'PRODUCT_ID', 'SUBCATEGORY', 'WEEK', 'WEEK_START', 'WEEK_END', 'HOLIDAY', 'MOVE', 'QTY', 'PRICE', 'UNIT_PRICE', 'DOLLARS', 'MARGIN_PCT', 'GROSS_PROFIT', 'DEAL_CODE', 'NEG_MARGIN_FLAG', 'EXTREME_MARGIN_FLAG', 'MOVE_OUTLIER_FLAG']
+
+Sample rows:
+ STORE        UPC  PRODUCT_ID    SUBCATEGORY  WEEK WEEK_START   WEEK_END     HOLIDAY  MOVE  QTY  PRICE  UNIT_PRICE  DOLLARS  MARGIN_PCT  GROSS_PROFIT DEAL_CODE  NEG_MARGIN_FLAG  EXTREME_MARGIN_FLAG  MOVE_OUTLIER_FLAG
+    76 7840008800  7840008800            csd   397 1997-04-17 1997-04-23         NaN     1    1   6.99        6.99     6.99       14.16      0.989784         S            False                False              False
+   124 7297900264  7297900264            csd   356 1996-07-04 1996-07-10 4th of July     2    1   4.79        4.79     9.58      -24.21     -2.319318      NONE             True                False              False
+    75 2950000069  2950001933            csd   328 1995-12-21 1995-12-27   Christmas    25    1   1.49        1.49    37.25        4.02      1.497450      NONE            False                False              False
+   123 3828100333  3828100333          water   358 1996-07-18 1996-07-24         NaN    13    1   0.69        0.69     8.97       38.55      3.457935      NONE            False                False              False
+   134 5020000745  5020000745 lemonade_punch   151 1992-07-30 1992-08-05         NaN     2    1   2.79        2.79     5.58       20.07      1.119906      NONE            False                False              False
+
+==========================================================================================
+DONE
+==========================================================================================

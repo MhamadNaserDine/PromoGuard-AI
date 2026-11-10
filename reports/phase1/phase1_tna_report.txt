@@ -1,0 +1,474 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 1 DATA UNDERSTANDING — category 'tna'
+==========================================================================================
+UPC file     : data\raw\dominicks\tna\upctna.csv
+Movement file: data\raw\dominicks\tna\wtna.zip
+
+==========================================================================================
+UPC FILE: SHAPE, COLUMNS, TYPES
+==========================================================================================
+Shape: 278 rows x 6 columns
+Memory: 0.0 MB
+
+Columns and dtypes:
+COM_CODE    int64
+UPC         int64
+DESCRIP       str
+SIZE          str
+CASE        int64
+NITEM       int64
+
+Documented columns NOT found : []
+Columns found but not expected: []
+
+==========================================================================================
+UPC FILE: SAMPLE ROWS (first 5 + random 5)
+==========================================================================================
+   COM_CODE         UPC               DESCRIP    SIZE  CASE   NITEM
+0       329   382105005  DOM CHUNK LIGHT TUNA    6 OZ    48  504021
+1       329  1115204121    MACK IN TOMATO SCE   15 OZ    12   50060
+2       329  1119449692  $S & W WHOLE BABY CL  10.25O    12  512560
+3       329  1119449696  $S & W WHOLE BABY CL  10.25O    12  512560
+4       329  1119449890     S&W WHOLE OYSTERS    8 OZ    24  512500
+
+     COM_CODE         UPC               DESCRIP    SIZE  CASE    NITEM
+30        329  3480000200  KING OSCAR 2 LAYER S  3.75 O    24   506001
+126       329  7020023002  ROMANOFF ICELAND LUM  3.5 OZ     6  9845590
+199       329  7402700160  POLAR SARDINES IN LE   4.5OZ    24   508021
+142       329  7067000641  REESE PORT S&B SARDI  3.75 O    10   520010
+253       329  8660000002  BUMBLE BEE SOLID WHT  6.12 O    24   500281
+
+==========================================================================================
+UPC FILE: MISSING VALUES
+==========================================================================================
+          n_missing  pct_missing
+COM_CODE          0          0.0
+UPC               0          0.0
+DESCRIP           0          0.0
+SIZE              0          0.0
+CASE              0          0.0
+NITEM             0          0.0
+
+==========================================================================================
+UPC FILE: DUPLICATES
+==========================================================================================
+Fully duplicated rows: 0
+
+==========================================================================================
+UPC FILE: PRODUCTS
+==========================================================================================
+Unique UPCs: 278 (rows: 278)
+Duplicated UPC values: 0
+
+COM_CODE (commodity code) counts:
+COM_CODE
+329    278
+
+Top 25 SIZE values:
+SIZE
+3.75 O    33
+6 OZ      28
+2 OZ      23
+6.5 OZ    22
+4.25 O    19
+6.12 O    16
+3.5 OZ    12
+3.25OZ    10
+8 OZ       9
+12.5 O     9
+7.5 OZ     6
+14.75O     6
+3.66 O     5
+3/3 OZ     5
+15 OZ      4
+10 OZ      4
+14.7 O     4
+3.3 OZ     4
+.05 OZ     4
+9.25 O     3
+7 OZ       3
+5 OZ       3
+15.5 O     3
+10.25O     2
+3.7 OZ     2
+
+40 random product descriptions:
+11     C O S L/S CHUNK LIGH
+73       BOOTH SARD OIL E-Z
+146    REESE FLAT ANCHOVIES
+79     AMATI BABY CLAMS WIT
+266    BUM BEE CHNK LT TUNA
+127    $ROM RED LUMPFISH CA
+70     ORLEANS LUMP CRAB ME
+18     $ROMANOFF CAVIER RED
+12     C O S LITE TUNA - WA
+208     POLAR DOMSTC DEVEND
+42     HH CHUNK LIGHT TUNA/
+192    PORT CLYDE SARDINES/
+105    COS SOLID WHITE WATE
+206    POLAR SMOKED MUSSELS
+218     STARKIST CK LT TUNA
+120    SARDA SARDINES IN VE
+205    ~POLAR IMPORTED BROK
+122    BRUNSWICK SARDINES/M
+108    C O S CHUNK LIGHT WA
+112    COS SLEEVE CHUNK LIG
+137        SMOKED FROG LEGS
+221    STAR KIST CHUNK LIGH
+193    ~POLAR FANCY CRB MEA
+89      COS CHUNK LIGHT OIL
+259    BUMBLE BEE CHK LT TU
+264    BUMBLE BEE PINK SALM
+186    PILLAR ROCK RED SALM
+95       COS WHITE CRABMEAT
+4         S&W WHOLE OYSTERS
+17     ROMANOFF RED LUMPFSH
+262    BUMBLE BEE ALASKA RE
+159     KING OSCAR SARDINES
+102       C O S PINK SALMON
+228    STARKSIT CHNK LT LUN
+132    ROM.RED SALMON CAVIA
+180           NICE SARDINES
+161     KING OSCAR SARDINES
+85     ORLEANS SMOKED OYSTE
+5      S&W FANCY RED SOCKEY
+39       C.O.S. KETA SALMON
+
+Most common first word of DESCRIP (rough brand hint, NOT a brand field):
+DESCRIP
+ORLEANS      20
+KING         18
+STAR         17
+C            16
+~COS         13
+COS          13
+BUMBLE       11
+STARKIST     10
+REESE         9
+~POLAR        8
+POLAR         8
+DOM           6
+$ROMANOFF     6
+PILLAR        6
+BUM           6
+ROMANOFF      5
+BOOTH         5
+HH            4
+BRUNSWICK     4
+$REESE        4
+ROYAL         4
+SK            4
+ROM.RED       3
+ROMANOF       3
+P.S.          3
+
+CASE (describe):
+count    278.00
+mean      19.14
+std       11.86
+min        6.00
+25%       12.00
+50%       14.00
+75%       24.00
+max      100.00
+
+NITEM (describe):
+count        278.00
+mean     1001259.10
+std      2110302.24
+min        50060.00
+25%       502116.00
+50%       503661.00
+75%       508986.00
+max      9845590.00
+
+==========================================================================================
+MOVEMENT FILE: SHAPE, COLUMNS, TYPES
+==========================================================================================
+Shape: 3,763,229 rows x 11 columns
+Memory: 858.4 MB
+
+Columns and dtypes:
+STORE           int64
+UPC             int64
+WEEK            int64
+MOVE            int64
+QTY             int64
+PRICE         float64
+SALE              str
+PROFIT        float64
+OK              int64
+PRICE_HEX         str
+PROFIT_HEX        str
+
+Documented columns NOT found : []
+Columns found but not expected: []
+
+==========================================================================================
+MOVEMENT FILE: SAMPLE ROWS (first 5 + random 5)
+==========================================================================================
+   STORE        UPC  WEEK  MOVE  QTY  PRICE SALE  PROFIT  OK         PRICE_HEX        PROFIT_HEX
+0      2  382105005   244     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+1      2  382105005   245     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+2      2  382105005   246    10    1   0.79  NaN   16.83   1  3FE947AE147AE148  4030D47AE147AE14
+3      2  382105005   247    48    1   0.79  NaN   23.67   1  3FE947AE147AE148  4037AB851EB851EC
+4      2  382105005   248    27    1   0.79  NaN   27.97   1  3FE947AE147AE148  403BF851EB851EB8
+
+         STORE         UPC  WEEK  MOVE  QTY  PRICE SALE  PROFIT  OK         PRICE_HEX        PROFIT_HEX
+2990393    101  8000000134   147    13    1   1.29  NaN   21.39   1  3FF4A3D70A3D70A4  403563D70A3D70A4
+1550525     84  7020023035   308     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+915509      81  4800000005   331     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+2388784     91  7335000000   145     2    1   0.70  NaN   17.57   1  3FE6666666666666  403191EB851EB852
+3607958     44  8660000070   198     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+
+==========================================================================================
+MOVEMENT FILE: MISSING VALUES
+==========================================================================================
+            n_missing  pct_missing
+STORE               0         0.00
+UPC                 0         0.00
+WEEK                0         0.00
+MOVE                0         0.00
+QTY                 0         0.00
+PRICE               0         0.00
+SALE          3325958        88.38
+PROFIT              0         0.00
+OK                  0         0.00
+PRICE_HEX           0         0.00
+PROFIT_HEX          0         0.00
+
+==========================================================================================
+MOVEMENT FILE: DUPLICATES
+==========================================================================================
+Fully duplicated rows: 0
+
+==========================================================================================
+MOVEMENT: KEY DUPLICATES (UPC, STORE, WEEK)
+==========================================================================================
+Rows sharing a (UPC, STORE, WEEK) key: 0
+
+==========================================================================================
+MOVEMENT: PRODUCTS, STORES, WEEKS
+==========================================================================================
+Unique UPCs  : 278
+Unique stores: 93
+Unique weeks : 375  (min 1, max 399)
+Weeks missing inside the range: 24 -> [262, 263, 264, 265, 278, 279, 284, 285, 314, 315, 316, 317, 352, 353, 354, 355, 356, 357, 384, 385, 386, 387, 392, 393]
+
+Store list: [2, 5, 8, 9, 12, 14, 18, 21, 28, 32, 33, 40, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 56, 59, 62, 64, 67, 68, 70, 71, 72, 73, 74, 75, 76, 77, 78, 80, 81, 83, 84, 86, 88, 89, 90, 91, 92, 93, 94, 95, 97, 98, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 126, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 146]
+
+Weeks observed per store (describe):
+count     93.0
+mean     342.5
+std       92.0
+min       22.0
+25%      375.0
+50%      375.0
+75%      375.0
+max      375.0
+
+Weeks observed per UPC (describe):
+count    278.0
+mean     217.1
+std      119.4
+min        8.0
+25%      114.2
+50%      219.0
+75%      334.5
+max      375.0
+
+UPC-store series: 19,969; rows per series (describe):
+count    19969.0
+mean       188.5
+std        110.9
+min          2.0
+25%        100.0
+50%        162.0
+75%        281.0
+max        375.0
+
+Rows per week (describe):
+count      375.0
+mean     10035.3
+std       1211.0
+min       6643.0
+25%       9347.5
+50%      10446.0
+75%      10854.0
+max      11903.0
+
+==========================================================================================
+MOVEMENT: OK FLAG (data-quality flag)
+==========================================================================================
+OK
+1    3685264
+0      77965
+
+==========================================================================================
+MOVEMENT: QTY (bundle size, e.g. 3 for $1)
+==========================================================================================
+QTY
+1    3752144
+2       7919
+3       2435
+4        731
+
+==========================================================================================
+MOVEMENT: PRICE (shelf price for QTY units)
+==========================================================================================
+count    3763229.000
+mean           1.152
+std            1.219
+min            0.000
+1%             0.000
+5%             0.000
+25%            0.000
+50%            0.980
+75%            1.710
+95%            3.390
+99%            5.490
+max           12.890
+
+PRICE == 0 : 1,359,671
+PRICE <  0 : 0
+PRICE NaN  : 0
+
+Unit price = PRICE / QTY (describe, PRICE > 0 only):
+count    2403558.000
+mean           1.799
+std            1.072
+min            0.110
+1%             0.590
+50%            1.570
+99%            5.890
+max           12.890
+
+==========================================================================================
+MOVEMENT: MOVE (units sold)
+==========================================================================================
+count    3763229.00
+mean          11.54
+std           82.71
+min            0.00
+1%             0.00
+5%             0.00
+25%            0.00
+50%            2.00
+75%            9.00
+95%           37.00
+99%          125.00
+99.9%        740.00
+max        19456.00
+
+MOVE == 0 : 1,359,219 (36.12%)
+MOVE <  0 : 0
+Non-integer MOVE values: 0
+MOVE > 0 but PRICE <= 0: 452
+MOVE == 0 and PRICE > 0: 0
+
+Total dollar sales (PRICE*MOVE/QTY, PRICE>0): $52,163,728
+
+==========================================================================================
+MOVEMENT: PROFIT (documented as gross margin, %)
+==========================================================================================
+count    3763229.000
+mean          18.233
+std           15.852
+min          -99.100
+1%             0.000
+5%             0.000
+25%            0.000
+50%           21.970
+75%           31.170
+95%           40.510
+99%           51.540
+max           99.990
+
+PROFIT <  0   : 11,173
+PROFIT == 0   : 1,360,302
+PROFIT >= 100 : 0
+PROFIT <= -100: 0
+
+==========================================================================================
+MOVEMENT: SALE (deal code)
+==========================================================================================
+            n     pct
+SALE                 
+NaN   3325958  88.380
+B      417998  11.107
+S       17949   0.477
+G        1324   0.035
+
+Mean / median by deal code (PRICE > 0 rows):
+              MOVE        UNIT_PRICE         PROFIT       
+              mean median       mean median    mean median
+SALE_CODE                                                 
+B           27.731   10.0      1.663   1.49  26.937  27.81
+G          107.969   63.0      1.525   1.20  -2.285   1.11
+S          207.242   64.0      1.125   0.75  20.429  20.46
+
+Deal code vs. price >=5% below its UPC-store median (row % within code):
+PRICE_DROP_5PCT  False  True 
+SALE_CODE                    
+B                48.75  51.25
+G                 4.32  95.68
+S                22.40  77.60
+
+Counts:
+PRICE_DROP_5PCT   False    True     All
+SALE_CODE                              
+B                203626  214032  417658
+G                    57    1262    1319
+S                  4016   13915   17931
+All              207699  229209  436908
+
+Share of rows with a B/C/S deal code, by week (describe):
+count    375.00
+mean      11.44
+std        6.49
+min        0.00
+25%        6.63
+50%       10.32
+75%       15.49
+max       34.01
+Weeks with 0% flagged: [219]
+
+==========================================================================================
+JOIN CHECK: MOVEMENT <-> UPC on UPC
+==========================================================================================
+UPCs in movement: 278 | in UPC file: 278
+In movement but NOT in UPC file: 0
+In UPC file but NOT in movement: 0
+Movement rows without product info: 0
+
+Top 20 UPCs by total units sold:
+       UPC  TOTAL_UNITS              DESCRIP   SIZE  COM_CODE
+8000000245      5524471 STAR K CH LT TUNA WA 6.12 O       329
+8660000033      3871688 BUM BEE/WATER CHK LI 6.12 O       329
+4800000024      3530766 C O S CHUNK LIGHT TU   6 OZ       329
+8000000280      1659597 STAR KIST CH LT TUNA 6.12 O       329
+3828105003      1297392 HH CHUNK LITE TUNA/O 6.5 OZ       329
+8660000037      1147643 BUM BEE OIL CHK LITE 6.12 O       329
+3828105005      1089367 HH CHUNK LIGHT TUNA/ 6.5 OZ       329
+7114010110      1010835 GEISHA WHITE TUNA IN   6 OZ       329
+1780000024       893999 C O S CHUNK LIGHT TU   6 OZ       329
+7303010314       816448 PILLAR ROCK PINK SAL 15.5 O       329
+8660000002       721638 BUMBLE BEE SOLID WHT 6.12 O       329
+7760015227       718356 3-DIAMOND SOLID WHIT   6 OZ       329
+4800000012       698744  COS CHUNK LIGHT OIL   6 OZ       329
+8000000141       670802 STAR K SOLID WHT TUN 6.12 O       329
+3828105001       600540 HH CHUNK LITE TUNA/O 6.5 OZ       329
+8000000334       586315 STAR KIST CHUNK TUNA 12.5 O       329
+8660000013       550214 BUM BEE CHUNK WHT WA 6.12 O       329
+4800001164       498305 C O S CHUNK LIGHT WA 12.5 O       329
+3480000200       476498 KING OSCAR 2 LAYER S 3.75 O       329
+3828105025       470640 HH CHUNK LITE TUNA W 12.5 O       329
+Top 10 UPCs = 48.0% of units
+Top 20 UPCs = 61.8% of units
+Top 50 UPCs = 80.6% of units
+
+==========================================================================================
+DONE
+==========================================================================================
+Report saved to: reports\phase1\phase1_tna_report.txt

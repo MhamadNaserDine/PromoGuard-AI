@@ -1,0 +1,12 @@
+AI PROMOTION ANALYST — EVALUATION
+========================================
+Questions: 10
+Passed (all checks): 10 / 10 (100%)
+By question group: both: 1/1 | soft drinks: 9/9
+Correct tool chosen: 100%
+Correct number in answer: 100%
+Question-specific rule: 100%
+Correct product category passed to tools: 100%
+Mean time per question: 5.4 s
+
+Failures:

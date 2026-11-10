@@ -1,0 +1,51 @@
+PHASE 10 — PERSONALIZED DISCOUNTS BY CUSTOMER GROUP
+=======================================================
+Stores with demographics: 83 · groups: 4 (k-means, best silhouette 0.303)
+Variables: income, educ, age60, hsizeavg, poverty, workwom, shpavid  (ethnicity deliberately excluded)
+
+GROUP PROFILES (means; income = median $)
+                         stores        income   educ  age60  hsizeavg  poverty  workwom  shpavid
+GROUP                                                                                           
+Affluent professionals       31  52037.863281  0.314  0.176     2.621    0.027    0.388    0.164
+Older, budget-conscious      27  33610.347656  0.117  0.216     2.659    0.082    0.303    0.208
+Urban low-income              7  25249.373047  0.268  0.155     2.158    0.141    0.383    0.123
+Young families               18  43501.078125  0.221  0.110     2.942    0.036    0.385    0.235
+
+RESPONSE MULTIPLIER vs chain average (1.00 = average; within-promotion, 300 bootstrap draws)
+DEPTH                     0.05   0.10   0.15   0.20   0.25   0.30   0.40
+GROUP                                                                   
+Affluent professionals   1.007  0.996  0.985  0.974  0.962  0.951  0.928
+Older, budget-conscious  0.996  1.014  1.033  1.052  1.071  1.090  1.129
+Urban low-income         1.085  1.059  1.034  1.009  0.984  0.960  0.913
+Young families           0.962  0.963  0.964  0.964  0.965  0.965  0.965
+
+Significant at 90% (range excludes 1.00):
+DEPTH                     0.05   0.10  0.15   0.20   0.25  0.30  0.40
+GROUP                                                                
+Affluent professionals    True  False  True   True   True  True  True
+Older, budget-conscious  False   True  True   True   True  True  True
+Urban low-income          True   True  True  False  False  True  True
+Young families            True   True  True   True   True  True  True
+
+POOLED LIFT % BY GROUP AND DEPTH (descriptive)
+DEPTH_BUCKET              <5%  5-10%  10-20%   >=20%
+GROUP                                               
+Affluent professionals   52.0   85.0   235.0   814.0
+Older, budget-conscious  75.0  106.0   270.0  1047.0
+Urban low-income         58.0   79.0   197.0   711.0
+Young families           55.0   99.0   265.0   924.0
+
+PERSONALIZED vs ONE CHAIN-WIDE DISCOUNT (2-week promotion, retailer pays, all active products)
+  chain-wide best depth: total gross-profit impact 23,472 $
+  personalized by group: total gross-profit impact 23,705 $
+  gain from personalization: 233 $ (+1.0%)
+
+Most common recommended depth by group:
+GROUP
+Affluent professionals     15%
+Older, budget-conscious    15%
+Urban low-income           15%
+Young families             15%
+
+Caveats: group differences are associations between store demographics and measured promotion
+response (store groups also differ in other ways). Store-level data — no individual customers.

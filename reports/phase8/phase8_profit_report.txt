@@ -1,0 +1,128 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 8 GROSS-PROFIT IMPACT — canned tuna
+==========================================================================================
+All figures are ESTIMATED GROSS-PROFIT impacts (margin on average acquisition cost),
+not net profit. Model-based counterfactuals; see Phases 5-7 for assumptions.
+
+Promotion rows with a pre-promotion cost: 100.0%
+Recorded cost during promotions / pre-promotion cost:
+count    226555.000
+mean          0.978
+std           0.081
+min           0.000
+5%            0.844
+25%           0.950
+50%           0.996
+75%           1.005
+95%           1.075
+max           1.897
+-> Mostly unchanged; in a minority of promotions the recorded cost drops (trade-deal buying).
+
+==========================================================================================
+1. POOLED GROSS-PROFIT IMPACT (all in-scope events)
+==========================================================================================
+Events: 1,068
+  Counterfactual gross profit (no promotion)      : $1.61M
+  Gross-profit lift, promoted products (pre cost) : $151,059
+  After-event weeks                               : $7,175
+  Cannibalized other tuna                         : -$155,688
+  NET impact, pre-promotion cost                  : $2,546  (+0.2% vs. counterfactual)
+  NET impact, recorded cost                       : $848,639
+     difference = estimated trade-deal funding    : $846,093
+
+  Revenue given away as discounts                 : $3.27M
+     of which on units that would have sold anyway: $503,108 (15.4%)
+  Gross profit per $1 of discount: pre cost +0.00 | recorded cost +0.26
+  90% bootstrap interval (events), net pre-cost: -$314,490 to $323,334
+
+Events that INCREASED gross profit: pre cost 61.6% | recorded cost 65.2%
+  with 90% confidence (pre cost): gain 36.9% | loss 20.4% | uncertain 42.7%
+  [figure] reports/phase8/figures/gp_waterfall.png
+
+==========================================================================================
+2. BY DISCOUNT DEPTH
+==========================================================================================
+        events      cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                      
+<5%        515  595580.41        157423.65        146713.02            24.63      116973.19          1.35          1.25             66.80             65.05
+5-10%      251  429552.12        108236.05         88524.91            20.61      231776.37          0.47          0.38             64.54             58.57
+10-20%     190  396269.15        329002.29        278170.56            70.20      761319.66          0.43          0.37             67.37             68.42
+>=20%      112  189081.58        253977.37       -510862.49          -270.18     2157146.47          0.12         -0.24             55.36             41.07
+  [figure] reports/phase8/figures/gp_roi_by_depth.png
+
+==========================================================================================
+3. BY PROMOTION KIND, BRAND, LENT, DURATION
+==========================================================================================
+
+By PROMO_KIND:
+                         events      cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                                       
+deal code, no price cut     530  624219.06        154361.27        136218.87            21.82      160078.98          0.96          0.85             65.85             63.58
+price promotion             538  986264.20        694278.09       -133672.87           -13.55     3107136.71          0.22         -0.04             64.50             59.67
+
+By BG:
+                    events      cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                                  
+Bumble Bee             286  435159.20         88206.80        -52989.24           -12.18      838561.75          0.11         -0.06             65.03             61.19
+Chicken of the Sea     346  367084.53        356620.61       -112012.47           -30.51     1169336.12          0.30         -0.10             65.61             63.58
+Dominick's             100  105424.92         60178.77         32276.84            30.62      167574.27          0.36          0.19             69.00             65.00
+Other                   90  233523.55         31705.60         18610.39             7.97       92527.97          0.34          0.20             64.44             60.00
+StarKist               246  469291.06        311927.59        116660.49            24.86      999215.58          0.31          0.12             63.41             58.54
+
+By LENT:
+          events       cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                         
+Lent         266   418556.82        447036.83       -253275.89           -60.51     1697046.33          0.26         -0.15             59.77             52.63
+not Lent     802  1191926.44        401602.54        255821.89            21.46     1570169.36          0.26          0.16             66.96             64.59
+
+By DURATION (weeks):
+       events      cf_gp  net_gp_recorded  net_gp_pre_cost  gp_change_%_pre  discount_cost  roi_recorded  roi_pre_cost  %_profitable_rec  %_profitable_pre
+group                                                                                                                                                     
+1         358  189821.50        428290.13       -102018.14           -53.74     1252464.05          0.34         -0.08             65.92             62.29
+2         248  294728.43        168983.30        -51785.78           -17.57      952901.16          0.18         -0.05             62.50             60.89
+3         160  268151.87         67630.14         49845.02            18.59      238174.16          0.28          0.21             66.25             62.50
+4         123  269564.72         37449.75         15168.77             5.63      306489.02          0.12          0.05             61.79             59.35
+5+        179  588216.75        146286.05         91336.14            15.53      517187.30          0.28          0.18             68.72             62.01
+  [figure] reports/phase8/figures/lift_vs_gp_scatter.png
+
+==========================================================================================
+4. BEST AND WORST EVENTS (net gross-profit impact, pre-promotion cost)
+==========================================================================================
+Best 8:
+ EVENT_ID              DESCRIP START_DATE  DURATION_WEEKS  MEAN_DEPTH      PROMO_KIND  LIFT_PCT  NET_GP_IMPACT_PRE  NET_GP_IMPACT_REC  GP_ROI_PRE
+      690 STAR K CH LT TUNA WA 1990-09-20               2        0.15 price promotion   1415.63           48768.90           56164.80        1.59
+      273 C O S CHUNK LIGHT TU 1990-02-22               1        0.19 price promotion   5659.49           41922.69           43168.08        1.57
+      745 STAR KIST CH LT TUNA 1990-09-20               2        0.15 price promotion   1773.10           18180.05           21784.19        1.46
+      684 STAR K CH LT TUNA WA 1989-12-07               5        0.12 price promotion    325.01           14765.18           12348.45        0.78
+      697 STAR K CH LT TUNA WA 1991-09-05               1        0.12 price promotion   1665.98           12837.04           15181.07        0.96
+      221  COS CHUNK LIGHT OIL 1990-02-22               1        0.19 price promotion   3989.23           12085.57           13616.49        1.39
+     1085 BUM BEE/WATER CHK LI 1997-02-13               1        0.29 price promotion   5847.74           11261.33           48930.77        0.20
+      291 C O S CHUNK LIGHT TU 1992-01-09               2        0.08 price promotion    796.79           11233.37           10797.00        2.65
+
+Worst 8:
+ EVENT_ID              DESCRIP START_DATE  DURATION_WEEKS  MEAN_DEPTH      PROMO_KIND  LIFT_PCT  NET_GP_IMPACT_PRE  NET_GP_IMPACT_REC  GP_ROI_PRE
+      283 C O S CHUNK LIGHT TU 1991-02-21               1        0.68 price promotion  12326.33         -126770.70          119819.91       -0.47
+      292 C O S CHUNK LIGHT TU 1992-03-12               1        0.53 price promotion  10783.53          -69424.48           37166.55       -0.49
+     1074 BUM BEE/WATER CHK LI 1994-07-28               2        0.45 price promotion   3262.36          -53096.36          -32136.58       -0.52
+     1084 BUM BEE/WATER CHK LI 1996-01-04               2        0.38 price promotion   4997.88          -51222.57          -23252.52       -0.47
+      693 STAR K CH LT TUNA WA 1991-02-07               2        0.26 price promotion   2231.67          -49483.77           46684.94       -0.33
+      230  COS CHUNK LIGHT OIL 1991-02-21               1        0.68 price promotion   7092.18          -36086.14           36957.62       -0.43
+      302 C O S CHUNK LIGHT TU 1993-02-25               1        0.51 price promotion  14098.13          -33954.74          -39589.49       -0.22
+      238  COS CHUNK LIGHT OIL 1992-03-05               2        0.33 price promotion   3751.73          -19812.70            4164.11       -0.48
+
+==========================================================================================
+5. KEY TAKEAWAYS (generated from the numbers above)
+==========================================================================================
+  * Highest return per $ of discount (pre cost): depth <5% (+1.25); lowest: >=20% (-0.24).
+  * 38% of events reduced gross profit if the retailer paid the whole discount.
+  * 15% of discount dollars went to units that would have sold anyway.
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data/processed/tna_event_profit.csv  (1,149 events, 72 columns)
+
+==========================================================================================
+DONE
+==========================================================================================

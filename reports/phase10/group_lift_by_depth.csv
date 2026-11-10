@@ -1,0 +1,17 @@
+GROUP,DEPTH_BUCKET,store_events,actual,counterfactual,LIFT_PCT
+Affluent professionals,<5%,15637,1261054,827535.16,52.39
+Affluent professionals,5-10%,6285,778423,420443.02,85.14
+Affluent professionals,10-20%,5250,1442265,430963.82,234.66
+Affluent professionals,>=20%,3818,2023089,221355.95,813.95
+"Older, budget-conscious",<5%,13755,1209698,692429.49,74.7
+"Older, budget-conscious",5-10%,5378,653587,318022.92,105.52
+"Older, budget-conscious",10-20%,4682,1375592,371854.52,269.93
+"Older, budget-conscious",>=20%,3396,2515773,219294.08,1047.21
+Urban low-income,<5%,2668,220019,138890.7,58.41
+Urban low-income,5-10%,1497,152421,85248.28,78.8
+Urban low-income,10-20%,1491,374480,126272.78,196.56
+Urban low-income,>=20%,1366,919951,113503.51,710.5
+Young families,<5%,9942,754040,485191.51,55.41
+Young families,5-10%,3490,422887,212593.47,98.92
+Young families,10-20%,2491,713291,195670.84,264.54
+Young families,>=20%,1671,977419,95456.48,923.94

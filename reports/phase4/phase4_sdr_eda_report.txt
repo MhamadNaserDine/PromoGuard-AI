@@ -1,0 +1,231 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 4 EXPLORATORY DATA ANALYSIS — carbonated soft drinks
+==========================================================================================
+All results are descriptive. Causal estimates come in later phases.
+Panel rows: 7,478,392 | products: 661 | stores: 93
+
+==========================================================================================
+DATA COVERAGE BY WEEK
+==========================================================================================
+Usual number of stores reporting soft-drink sales: 82
+Weeks below 50% coverage (no data or a handful of stores): 9
+  [219, 254, 255, 256, 257, 258, 259, 260, 261]
+Longest gap: weeks 254-261 (8 weeks, 1994-07-21 to 1994-09-14)
+-> These weeks are excluded from weekly analyses here and must be excluded from model training.
+Panel rows kept for analysis: 7,478,392
+
+==========================================================================================
+Q1. CATEGORY DEMAND OVER TIME (soft-drink units per active store per week)
+==========================================================================================
+      weeks  units_per_store  promo_share  stores
+YEAR                                             
+1989     16          8823.54         0.25   71.06
+1990     52          8738.41         0.30   76.13
+1991     52          8574.84         0.29   81.54
+1992     53          7022.04         0.33   84.51
+1993     51          7108.32         0.33   85.65
+1994     44          7538.06         0.38   84.09
+1995     52          7891.05         0.37   80.52
+1996     52          8356.65         0.40   80.90
+1997     18          7933.18         0.35   83.00
+
+Note: 1989 and 1997 are partial years; low-coverage weeks are excluded (see DATA COVERAGE).
+  [figure] reports\phase4\sdr\figures\q1_category_demand_lent.png
+
+==========================================================================================
+Q2. HOLIDAYS AND SEASONS — CARBONATED SOFT DRINKS
+==========================================================================================
+Weekly regression of log(units per store) on holiday-week dummies + Lent + month FE + year FE,
+Newey-West SE (4 lags). Effects are % differences vs. a normal week of the same month and year.
+           model           term  effect_%  ci_low_%  ci_high_%    t
+no promo control      LENT_WEEK      -2.3     -12.9        9.5 -0.4
+no promo control    4th of July       3.3      -8.0       16.0  0.5
+no promo control      Christmas      -5.6     -11.8        1.0 -1.7
+no promo control      Halloween     -13.1     -23.9       -0.8 -2.1
+no promo control      Labor Day      -4.1     -17.7       11.8 -0.5
+no promo control   Memorial Day     -11.0     -22.4        2.2 -1.7
+no promo control       New-Year      20.3       8.9       33.0  3.6
+no promo control Presidents Day      -4.9     -24.0       18.9 -0.4
+no promo control   Thanksgiving     -18.2     -29.2       -5.4 -2.7
+with promo share      LENT_WEEK      -2.1     -12.5        9.5 -0.4
+with promo share    4th of July       0.2     -10.3       11.9  0.0
+with promo share      Christmas      -7.6     -13.4       -1.4 -2.4
+with promo share      Halloween     -13.9     -23.8       -2.7 -2.4
+with promo share      Labor Day      -5.2     -17.3        8.6 -0.8
+with promo share   Memorial Day      -9.9     -21.3        3.1 -1.5
+with promo share       New-Year      16.9       4.6       30.6  2.8
+with promo share Presidents Day      -2.1     -21.5       22.1 -0.2
+with promo share   Thanksgiving     -19.1     -28.5       -8.3 -3.3
+with promo share    PROMO_SHARE      63.2      22.9      116.7  3.4
+(PROMO_SHARE row: effect of going from 0% to 100% of product-store weeks on promotion.)
+
+Seasonality by month (raw means over all years):
+       units_per_store  promo_share  index_vs_avg
+MONTH                                            
+1             7550.537        0.377         0.950
+2             7763.360        0.346         0.977
+3             7946.792        0.365         1.000
+4             7961.760        0.327         1.002
+5             8051.086        0.325         1.013
+6             8555.872        0.358         1.077
+7             8268.403        0.321         1.041
+8             8185.482        0.298         1.030
+9             7109.039        0.271         0.895
+10            7890.510        0.323         0.993
+11            7541.671        0.348         0.949
+12            8520.801        0.384         1.072
+  [figure] reports\phase4\sdr\figures\q2_seasonality.png
+
+==========================================================================================
+Q3. BRAND SHARES BY YEAR (% of soft-drink units)
+==========================================================================================
+BRAND_GROUP  Coca-Cola Co.  PepsiCo  7-Up  Dominick's  Other
+YEAR                                                        
+1989                  15.0     22.9   8.7        33.5   19.8
+1990                  15.2     22.6   7.8        32.5   21.9
+1991                  19.7     22.0   6.6        30.6   21.2
+1992                  19.7     23.3   7.7        26.7   22.6
+1993                  20.9     25.7   6.3        23.9   23.3
+1994                  19.1     23.8   7.7        22.7   26.7
+1995                  22.5     27.7   6.8        19.8   23.1
+1996                  26.2     28.1   7.0        18.5   20.2
+1997                  32.1     24.6   8.6        13.8   20.9
+
+Share of weeks on promotion and share of units sold on promotion, by brand:
+               promo_week_share  units_on_promo
+BRAND_GROUP                                    
+7-Up                       33.7            72.4
+Coca-Cola Co.              37.6            67.4
+Dominick's                 35.6            57.0
+Other                      32.0            56.5
+PepsiCo                    37.4            68.4
+  [figure] reports\phase4\sdr\figures\q3_brand_shares.png
+
+==========================================================================================
+Q4. PROMOTION CALENDAR — DO COMPETING BRANDS PROMOTE IN THE SAME WEEKS?
+==========================================================================================
+Share of weeks each brand has at least one chain promotion event running:
+Coca-Cola Co.    95.9
+PepsiCo          96.5
+7-Up             94.4
+Dominick's       85.8
+
+Number of major brands promoting in the same week — observed vs. expected if independent (%):
+   observed  expected_if_independent
+0       2.3                      0.0
+1       0.5                      0.1
+2       1.3                      2.1
+3      14.2                     22.5
+4      81.8                     75.3
+
+Pairwise co-promotion: observed share of weeks both promote / expected if independent:
+               Coca-Cola Co.  PepsiCo  7-Up  Dominick's
+Coca-Cola Co.            NaN     1.03  1.03        1.02
+PepsiCo                 1.03      NaN  1.03        1.02
+7-Up                    1.03     1.03   NaN        1.02
+Dominick's              1.02     1.02  1.02         NaN
+(> 1: promote together more often than chance; < 1: they alternate)
+  [figure] reports\phase4\sdr\figures\q4_promotion_calendar.png
+
+==========================================================================================
+Q5. WHAT HAPPENS AFTER A PROMOTION? (event study, descriptive)
+==========================================================================================
+Events used: 21,964 chain events lasting 1–2 weeks (the most common, cleanest windows)
+RATIO = units / median units in regular weeks -8..-3 of the same store (1.0 = normal).
+geo_mean = geometric mean of RATIO (robust to the huge spikes, not stuck at integer medians).
+Post-event weeks that were themselves promotions are excluded.
+     geo_mean  median      obs
+REL                           
+-8      0.991   1.000   750317
+-7      0.986   1.000   759563
+-6      0.962   1.000   784242
+-5      0.988   1.000   780535
+-4      0.984   1.000   766484
+-3      0.963   1.000   788542
+-2      0.958   1.000   757041
+-1      0.963   1.000  1143782
+ 0      3.533   3.111  1349900
+ 1      1.164   1.000  1146964
+ 2      0.964   1.000   824684
+ 3      0.961   1.000   722223
+ 4      0.969   1.000   712009
+ 5      0.949   1.000   698582
+ 6      0.946   1.000   735625
+ 7      0.964   1.000   703791
+ 8      0.977   1.000   682805
+
+Geo-mean ratio, pre weeks -8..-3: 0.979 | post weeks +2..+8: 0.962 -> post-promotion level -1.8% vs. pre-promotion
+A dip after promotions is consistent with stockpiling / purchase acceleration: part of the
+promotion spike is sales borrowed from future weeks. The incremental-sales phase must count it.
+  [figure] reports\phase4\sdr\figures\q5_post_promotion.png
+
+==========================================================================================
+Q6. STORES BY PRICE TIER
+==========================================================================================
+(top product = PRODUCT_ID 1200000230)
+                             stores  units_per_store_week  promo_share  mean_margin_pct  regular_price_top_product
+PRICE_TIER                                                                                                        
+Cub-Fighter                       9              8830.523        0.337           16.112                       1.43
+High                             25              7529.560        0.351           17.713                       1.59
+Low                               9             10057.778        0.343           16.869                       1.49
+Medium                           42              7377.188        0.344           17.109                       1.59
+unknown (opened after 1992)       8              9945.405        0.335           17.268                       1.58
+
+Reading: the tier sets the REGULAR price; promoted prices are set chainwide (manual),
+so the same promotion is a deeper discount in high-tier stores. Tier is a key store feature.
+
+==========================================================================================
+Q7. FIRST LOOK AT SUBSTITUTION BETWEEN MAJOR BRANDS (descriptive, NOT causal)
+==========================================================================================
+Lead product per brand:
+  Coca-Cola Co.        4900000639  COCA-COLA CLASSIC
+  PepsiCo              1200000230  PEPSI COLA N/R
+  7-Up                 7800000034  SEVEN-UP N/R
+  Dominick's           3828100253  DOM COLA
+
+Geometric-mean sales of the COLUMN brand's lead product, relative to weeks when none of the
+four lead products is promoted, in store-weeks where the ROW brand's lead product is on
+promotion (off-diagonal: and no other lead product is):
+               Coca-Cola Co.  PepsiCo   7-Up  Dominick's
+Coca-Cola Co.          3.183    0.876  0.964       0.967
+PepsiCo                0.878    3.634  0.990       0.995
+7-Up                   1.011    0.990  2.588       0.998
+Dominick's             0.967    0.966  1.002       1.815
+Diagonal = own promotion; off-diagonal < 1 is consistent with sales being drawn away (substitution).
+Off-diagonal range: 0.876 to 1.011 (mean 0.967)
+Caveat: NORMAL uses a centred 13-week window (descriptive only); not a counterfactual model.
+  [figure] reports\phase4\sdr\figures\q7_substitution_matrix.png
+
+==========================================================================================
+CHECK: EVENTS WITH PRICE ABOVE THE REGULAR PRICE (negative mean depth)
+==========================================================================================
+Events with mean depth below -5%: 738 of 24811
+ EVENT_ID  PRODUCT_ID  START_WEEK  DURATION_WEEKS  STORES  MEAN_DEPTH  SHARE_PRICE_PROMO MAIN_DEAL_CODE
+        1         418         298               3       5      -1.625              0.778              S
+       21         418         381               6      13      -0.358              0.000              S
+       22         418         388               2       8      -0.179              0.067              S
+       24         418         397               1       6      -0.067              0.000              S
+       60         420         282               3      83      -0.100              0.160              S
+       61         420         287               1      68      -0.095              0.221              S
+      128         421         284               1      73      -0.143              0.082              S
+      129         421         287               1      77      -0.107              0.195              S
+      161         422         160               1      26      -0.111              0.000              S
+      197         422         284               1      76      -0.128              0.053              S
+      198         422         287               1      78      -0.112              0.179              S
+      199         422         289               1      77      -0.147              0.208              S
+      224         422         381               6      82      -0.208              0.292              S
+      231         423         160               1      23      -0.087              0.000              S
+      268         423         284               1      72      -0.142              0.069              S
+These are deal-coded weeks where the shelf price was ABOVE the recent regular price
+(e.g. a regular price increase in the same week). Kept, labelled deal_only.
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data\processed\sdr_week_features.csv  (calendar features: LENT_WEEK, LENT_DAYS, WEEKS_TO_EASTER, COVERAGE_OK, ...)
+Figures in reports\phase4\sdr\figures/
+
+==========================================================================================
+DONE
+==========================================================================================

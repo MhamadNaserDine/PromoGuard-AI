@@ -1,0 +1,163 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 3 PROMOTION DEFINITION — carbonated soft drinks
+==========================================================================================
+Regular price : modal unit price of previous 12 observed weeks (min 4), same product & store
+Price cut     : unit price >= 5% below regular price
+Temporary     : price back to regular within 8 observed weeks (labelling only — never a model feature)
+
+csd rows (UPC x store x week): 7,550,120
+After merging barcode versions (PRODUCT_ID x store x week): 7,478,392 (71,334 rows combine 2+ UPCs)
+
+==========================================================================================
+1. PROMOTION TYPES
+==========================================================================================
+Panel rows (PRODUCT_ID x STORE x WEEK): 7,478,392
+                  rows   pct
+PROMO_TYPE                  
+regular        4460543  59.6
+price_promo    2107765  28.2
+deal_only       469183   6.3
+permanent_cut   242311   3.2
+no_history      198590   2.7
+
+PROMO (price_promo or deal_only): 35.4% of rows with history
+
+==========================================================================================
+2. DEAL CODE vs. OBSERVED PRICE CUT (>= 5% below regular)
+==========================================================================================
+PRICE_CUT    False     True      All
+DEAL_CODE                           
+B           204463   788661   993124
+C            29053     1131    30184
+G             7037    50983    58020
+NONE       4460543   479249  4939792
+S           228630  1030052  1258682
+All        4929726  2350076  7279802
+
+Row %:
+PRICE_CUT  False  True 
+DEAL_CODE              
+B           20.6   79.4
+C           96.3    3.7
+G           12.1   87.9
+NONE        90.3    9.7
+S           18.2   81.8
+
+Price cuts WITHOUT any deal code: 479,249 (20.4% of all price cuts)
+Price cuts that are temporary (back to regular within 8 weeks): 89.7%
+
+==========================================================================================
+3. DESCRIPTIVE SALES RATIO BY TYPE (not causal)
+==========================================================================================
+SALES_RATIO = units / median units of the same product-store in 'regular' weeks.
+This is a sanity check of the labels, NOT an estimate of promotion effect
+(no control for seasonality, trend, or other products).
+                                  count  mean    std   min   25%   50%   75%      max
+DETAIL                                                                               
+deal_only (code, no cut)       467946.0  3.96  11.81  0.00  1.00  1.60  3.00   878.00
+permanent_cut (price change)   241673.0  3.65  10.65  0.01  1.00  1.58  3.00   970.67
+price_promo + deal code       1762461.0  7.28  17.96  0.00  1.62  3.00  6.62  1352.50
+price_promo, no code           344951.0  6.86  18.11  0.01  1.32  2.50  5.72  1404.00
+regular                       4460543.0  1.35   3.97  0.00  0.67  1.00  1.50  1692.00
+
+==========================================================================================
+4. DISCOUNT DEPTH vs. SALES RATIO (price_promo rows + regular rows)
+==========================================================================================
+                  rows  median_ratio  mean_margin_pct
+DEPTH_BUCKET                                         
+<5% (regular)  4460543          1.00            22.30
+5-10%           230644          1.65            17.92
+10-15%          298175          2.00            10.80
+15-20%          320266          2.40            12.26
+20-30%          498655          2.81             4.40
+>=30%           760025          5.22             2.18
+
+==========================================================================================
+5. SENSITIVITY TO THE CUT THRESHOLD
+==========================================================================================
+threshold 5%:  32.3% of rows are price cuts;  79.6% of them carry a deal code
+threshold 10%:  28.6% of rows are price cuts;  80.7% of them carry a deal code
+threshold 15%:  24.2% of rows are price cuts;  81.0% of them carry a deal code
+
+==========================================================================================
+6. ARE PROMOTIONS CHAINWIDE? (share of stores on PROMO per product-week)
+==========================================================================================
+               promo_share  deal_code_share
+(-0.001, 0.0]        68634            81165
+(0.0, 0.1]           14398             6347
+(0.1, 0.25]           4062             2574
+(0.25, 0.5]           3442             3255
+(0.5, 0.75]           3028             2584
+(0.75, 0.9]           3416             3683
+(0.9, 1.0]           31170            28542
+Interpretation: deal codes are almost all-or-nothing across stores (chain decision);
+price cuts are less uniform because regular prices differ across the 16 pricing zones.
+
+==========================================================================================
+7. CHAIN-LEVEL PROMOTION EVENTS (>= 50% of stores on PROMO, consecutive weeks merged)
+==========================================================================================
+Events: 24,811 across 574 products
+
+Duration (weeks):
+DURATION_WEEKS
+1     17559
+2      4405
+3      1524
+4       657
+5       260
+6       150
+7       122
+8        66
+9        17
+10       19
+11       12
+12        3
+
+Event summary:
+       DURATION_WEEKS     STORES  MEAN_DEPTH  SHARE_PRICE_PROMO  SHARE_DEAL_CODED
+count       24811.000  24811.000   24811.000          24811.000         24811.000
+mean            1.529     66.881       0.207              0.825             0.883
+std             1.162     22.417       0.163              0.307             0.252
+min             1.000      1.000      -4.051              0.000             0.000
+25%             1.000     60.000       0.101              0.811             0.933
+50%             1.000     77.000       0.194              0.996             0.988
+75%             2.000     82.000       0.318              1.000             1.000
+max            29.000     86.000       0.889              1.000             1.000
+
+Main deal code of events:
+MAIN_DEAL_CODE
+S       13844
+B        7529
+NONE     2398
+G         618
+C         422
+
+PROMO rows inside a chain event: 94.5% (the rest are store-level/local promotions)
+
+Products with the most events:
+PRODUCT_ID  DESCRIP               BRAND       
+1200000746  DIET MOUNTAIN DEW     Mountain Dew    121
+1200000233  MOUNTAIN DEW N/R      Mountain Dew    118
+1200000496  DIET PEPSI CAFFEINE   Pepsi           117
+1200000492  CAFFEINE FREE PEPSI   Pepsi           116
+5490000060  DR PEPPER             Dr Pepper       112
+4900000935  COKE DIET CAFFEINE F  Diet Coke       112
+4900000569  SPRITE DIET           Sprite          112
+4900000572  FRESCA SODA           Fresca          111
+4900000551  SPRITE                Sprite          110
+5490000061  DR PEPPER SUGAR/FREE  Dr Pepper       110
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data\processed\sdr_csd_panel.parquet  (7,478,392 rows x 22 cols)
+data\processed\sdr_promo_events.csv  (24,811 events)
+reports\phase3\sdr\figures\fig_depth_vs_sales_ratio.png
+reports\phase3\sdr\figures\fig_price_promo_example.png
+
+Panel columns: ['PRODUCT_ID', 'STORE', 'WEEK', 'MOVE', 'DOLLARS', 'GROSS_PROFIT', 'N_UPC', 'WEEK_START', 'HOLIDAY', 'NEG_MARGIN_FLAG', 'EXTREME_MARGIN_FLAG', 'MOVE_OUTLIER_FLAG', 'UNIT_PRICE', 'MARGIN_PCT', 'DEAL_CODE', 'REG_PRICE', 'DEPTH', 'PRICE_CUT', 'TEMPORARY', 'PROMO_TYPE', 'PROMO', 'EVENT_ID']
+
+==========================================================================================
+DONE
+==========================================================================================

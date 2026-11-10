@@ -1,0 +1,97 @@
+STORE,CITY,ZONE,PRICE_TIER,STATUS
+2,River Forest,1,High,open
+4,Park Ridge,2,Medium,closed
+5,Palatine,2,Medium,open
+8,Oak Lawn,5,Low,open
+9,Morton Grove,2,Medium,open
+12,Chicago,7,High,open
+14,Glenview,1,High,open
+18,River Grove,5,Low,open
+19,Glen Ellyn,,,closed
+21,Hanover Park,6,Cub-Fighter,open
+25,Chicago,,,closed
+28,Mt. Prospect,2,Medium,open
+32,Park Ridge,1,High,open
+33,Chicago,7,High,open
+39,Waukegan,,,closed
+40,Bridgeview,6,Cub-Fighter,open
+44,,2,Medium,open
+45,Wheeling,2,Medium,open
+46,Carol Stream,5,Low,closed
+47,Addison,2,Medium,open
+48,Schaumburg,2,Medium,open
+49,,2,Medium,open
+50,Hickory Hills,2,Medium,open
+51,Palos Heights,3,Medium,open
+52,Northbrook,1,High,open
+53,Chicago,7,High,open
+54,Naperville,2,Medium,open
+55,Tinley Park,,,closed
+56,Countryside,2,Medium,open
+59,Crystal Lake,6,Cub-Fighter,open
+60,,,,closed
+62,Northfield,1,High,open
+64,Villa Park,2,Medium,open
+65,Hanover Park,2,Medium,closed
+67,,4,Low,open
+68,Chicago,1,High,open
+69,,,,renumbered_to_137
+70,Joliet,6,Cub-Fighter,open
+71,,1,High,open
+72,Lincolnwood,1,High,open
+73,Chicago,5,Low,open
+74,Norridge,2,Medium,open
+75,Chicago,7,High,open
+76,Chicago,2,Medium,open
+77,Vernon Hills,6,Cub-Fighter,open
+78,,6,Cub-Fighter,open
+80,,6,Cub-Fighter,open
+81,Mt. Prospect,2,Medium,open
+83,Lansing,6,Cub-Fighter,open
+84,Orland Park,2,Medium,open
+86,Chicago,2,Medium,open
+88,Bensenville,2,Medium,open
+89,Chicago,2,Medium,open
+90,Chicago,10,Medium,open
+91,Oak Lawn,2,Medium,open
+92,Hazel Crest,2,Medium,open
+93,Evanston,1,High,open
+94,Bloomingdale,5,Low,open
+95,Chicago,1,High,open
+97,Aurora,8,High,open
+98,Chicago,12,Medium,open
+100,Chicago,11,High,open
+101,Des Plaines,12,Medium,open
+102,,15,Low,open
+103,Bolingbrook,15,Low,open
+104,St. Charles,8,High,open
+105,Melrose Park,12,Medium,open
+106,Montgomery,8,High,open
+107,Westchester,2,Medium,open
+108,Park Forest,,,closed
+109,Bannockburn,7,High,open
+110,East Dundee,2,Medium,open
+111,Chicago,1,High,open
+112,Buffalo Grove,14,Low,open
+113,Chicago,2,Medium,open
+114,Calumet City,12,Medium,open
+115,Naperville,12,Medium,open
+116,Elmhurst,2,Medium,open
+117,Schaumburg,2,Medium,open
+118,Morton Grove,10,Medium,open
+119,Buffalo Grove,2,Medium,open
+121,Willowbrook,12,Medium,open
+122,,16,Cub-Fighter,open
+123,Chicago,1,High,open
+124,Oak Park,1,High,open
+126,Wheaton,12,Medium,open
+128,Chicago,11,High,open
+129,Lake Zurich,12,Medium,open
+130,Chicago,1,High,open
+131,,12,Medium,open
+132,Matteson,15,Low,open
+133,Niles,12,Medium,open
+134,West Chicago,13,Medium,open
+136,Buffalo Grove,10,Medium,open
+137,Evanston,1,High,open
+139,Bloomingdale,,,open

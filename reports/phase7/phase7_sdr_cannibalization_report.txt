@@ -1,0 +1,167 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 7 CANNIBALIZATION — carbonated soft drinks
+==========================================================================================
+
+==========================================================================================
+1. EXPECTED SALES WITHOUT COMPETITOR-PROMOTION FEATURES (cross-fitted by year)
+==========================================================================================
+Features removed: ['N_OTHER_PROMO', 'OTHER_BRAND_PROMO_W', 'SAME_BRAND_PROMO_W', 'OTHER_MAX_DEPTH']
+  fold 0: trained on 300,000 rows, predicted 928,352 (37s)
+  fold 1: trained on 300,000 rows, predicted 852,722 (35s)
+  fold 2: trained on 300,000 rows, predicted 977,303 (35s)
+  fold 3: trained on 300,000 rows, predicted 1,061,101 (36s)
+  fold 4: trained on 300,000 rows, predicted 963,273 (34s)
+  fold 5: trained on 300,000 rows, predicted 1,117,688 (36s)
+  fold 6: trained on 300,000 rows, predicted 1,577,953 (37s)
+      clean_rows    WAPE    BIAS
+fold                            
+0         485541  0.4323 -0.1357
+1         464776  0.3735 -0.0494
+2         550450  0.3549  0.0706
+3         620693  0.3444  0.0455
+4         492662  0.3177  0.0240
+5         621980  0.3332 -0.0066
+6         815342  0.3960 -0.0109
+
+==========================================================================================
+2. STORE x WEEK PANEL
+==========================================================================================
+Store-weeks: 31,771 | stores: 93 | weeks: 390
+Store-weeks with promotion-event lift: 97.6%
+             L        Y  Y_ACTUAL       Z1       Z2  LOCAL_PROMOS
+count  31771.0  31771.0   31771.0  31771.0  31771.0       31771.0
+mean    3578.7     24.9     398.0    240.2   1232.9           8.5
+std     2665.2    301.7     497.1    186.1    784.3          10.5
+min    -1820.2   -721.0       0.0      0.0      0.0           0.0
+25%     1882.0    -31.7      79.0    111.0    672.5           2.0
+50%     3018.4     -4.1     247.0    191.7   1072.5           6.0
+75%     4599.2     18.7     532.5    320.5   1629.0          11.0
+max    47187.7   7579.5    8098.0   1836.3   6133.6         180.0
+
+Share of the variation in L that remains after store and week effects: 25.6%
+(this within-week, across-store variation identifies the effect)
+
+==========================================================================================
+3. OVERALL DIVERSION RATIO (all soft-drink)
+==========================================================================================
+OLS (two-way FE):
+     coef      se       t  ci90_lo  ci90_hi
+L -0.0012  0.0018 -0.6915  -0.0042   0.0017
+
+2SLS (two-way FE, instruments: expected discount volume Z1, Z2):
+     coef      se       t  ci90_lo  ci90_hi  first_stage_F
+L  0.0005  0.0053  0.0962  -0.0082   0.0092      3650.9303
+
+-> For every extra unit sold by promoted soft-drink products, the non-promoted soft-drink products sell
+   +0.001 units (90% CI -0.008 to +0.009).
+   Cannibalization rate = -0.1% of the gross lift; net new category units = 100.1%.
+   OLS is closer to zero than 2SLS, as expected from measurement error in L (attenuation).
+
+Scope of the outcome: bystander products = 18% of all clean non-promoted soft-drink
+sales. Products close to their own promotion events are left out (they would break the
+lead test), so the estimate above is a LOWER BOUND for the whole assortment.
+If those products lose sales at the same rate (per unit sold), the diversion scales by 5.68:
+   scaled diversion = +0.003  ->  cannibalization rate ~ -0.3% (90% CI -5.2% to 4.6%)
+Reported range: -0.1% (bystanders only) to -0.3% (scaled). The scaled value is used for event attribution (conservative for profit).
+  [figure] reports/phase7/sdr/figures/binscatter_substitution.png
+
+==========================================================================================
+4. VALIDITY CHECKS
+==========================================================================================
+Interpretation of 'net new category units': extra soft-drink bought at Dominick's that did not
+come from other soft-drink products in the same store-week. It can be higher consumption, earlier
+purchases stored at home (no post-promotion dip was measured in Phase 6), or shoppers who
+would otherwise have bought soft-drink at another retailer. Store-level data cannot separate these.
+
+(a) Lead test, reduced form: outcome on this week's AND 2-weeks-later promotion volume.
+    Future promotions cannot cause this week's sales -> their coefficients should be ~0.
+                       coef       se        t
+Z1 (this week)     -0.02974  0.04086 -0.72781
+Z2 (this week)      0.00923  0.01242  0.74314
+Z1 (2 weeks later)  0.02596  0.02384  1.08875
+Z2 (2 weeks later)  0.00465  0.01707  0.27268
+
+(b) Instrument strength (first-stage F > 10 is the usual rule of thumb):
+    F = 3650.9
+
+(c) Where does the instrument's variation come from? Mean discount depth of promotion rows by tier:
+PRICE_TIER
+Cub-Fighter    18.2
+High           21.1
+Low            19.9
+Medium         20.5
+unknown        18.1
+
+==========================================================================================
+5. DIVERSION BY PROMOTED BRAND AND WHO LOSES (2SLS, same fixed effects)
+==========================================================================================
+Units lost by ALL other soft-drink per extra unit of the promoted brand:
+                 coef      se       t  ci90_lo  ci90_hi  first_stage_F
+Coca-Cola Co. -0.0080  0.0062 -1.2971  -0.0181   0.0021       409.4700
+PepsiCo       -0.0226  0.0091 -2.4778  -0.0375  -0.0076       405.3113
+7-Up          -0.0169  0.0169 -1.0004  -0.0448   0.0109       293.3171
+Dominick's     0.0057  0.0081  0.7044  -0.0076   0.0191      1135.9684
+Other          0.0055  0.0085  0.6518  -0.0084   0.0194       291.5384
+
+Diversion matrix: row = promoted brand, column = brand whose NON-promoted products gain/lose
+               Coca-Cola Co.  PepsiCo    7-Up  Dominick's   Other
+Coca-Cola Co.        -0.0076   0.0037  0.0022     -0.0011 -0.0052
+PepsiCo              -0.0020  -0.0102 -0.0018     -0.0015 -0.0070
+7-Up                  0.0056  -0.0085 -0.0091     -0.0005 -0.0044
+Dominick's            0.0004   0.0043  0.0014     -0.0007  0.0002
+Other                 0.0037  -0.0001  0.0008      0.0005  0.0007
+
+Standard errors:
+               Coca-Cola Co.  PepsiCo    7-Up  Dominick's   Other
+Coca-Cola Co.         0.0040   0.0046  0.0015      0.0007  0.0034
+PepsiCo               0.0020   0.0052  0.0017      0.0007  0.0037
+7-Up                  0.0101   0.0069  0.0049      0.0012  0.0078
+Dominick's            0.0005   0.0068  0.0019      0.0003  0.0017
+Other                 0.0031   0.0035  0.0018      0.0011  0.0038
+  [figure] reports/phase7/sdr/figures/diversion_matrix_brands.png
+
+==========================================================================================
+6. BY DRINK TYPE (regular vs. diet)
+==========================================================================================
+Row = promoted type, column = type losing units:
+         regular    diet
+regular   0.0010  0.0022
+diet      0.0066 -0.0127
+Standard errors:
+         regular    diet
+regular   0.0076  0.0012
+diet      0.0055  0.0056
+Closer substitutes (same type) are expected to lose more.
+
+==========================================================================================
+7. EVENT-LEVEL ATTRIBUTION
+==========================================================================================
+In-scope events: 22,469
+  Gross extra units of promoted products : 113,876,966
+  Taken from other soft-drink products          : 5,152,353  (4.5%)
+  Net new category units                  : 109,043,426
+
+By promoted brand:
+               events       gross  cannibalized  net_category  cannibalized_%
+BG                                                                           
+7-Up             1360  10404723.5     1000726.1     9369379.9             9.6
+Coca-Cola Co.    3544  27275370.6     1240871.4    26532536.9             4.5
+Dominick's       2364  20274320.8     -658527.0    20688667.6            -3.2
+Other           10542  22395387.0     -703406.8    23167145.8            -3.1
+PepsiCo          4659  33321440.7     4272689.7    29285696.3            12.8
+
+Attribution uses the brand-level diversion ratios (section 5) scaled by 5.68;
+event-specific diversion is not separately identified. Phase 8 converts these units into
+gross profit.
+  [figure] reports/phase7/sdr/figures/decomposition_gross_cannibalized_net.png
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data/processed/sdr_event_cannibalization.csv
+reports/phase7/sdr/diversion_by_promoted_brand.csv, diversion_matrix_brands.csv
+
+==========================================================================================
+DONE
+==========================================================================================

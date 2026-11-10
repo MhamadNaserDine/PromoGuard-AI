@@ -1,0 +1,167 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 7 CANNIBALIZATION — canned tuna
+==========================================================================================
+
+==========================================================================================
+1. EXPECTED SALES WITHOUT COMPETITOR-PROMOTION FEATURES (cross-fitted by year)
+==========================================================================================
+Features removed: ['N_OTHER_PROMO', 'OTHER_BRAND_PROMO_W', 'SAME_BRAND_PROMO_W', 'OTHER_MAX_DEPTH']
+  fold 0: trained on 300,000 rows, predicted 169,600 (32s)
+  fold 1: trained on 300,000 rows, predicted 139,410 (31s)
+  fold 2: trained on 300,000 rows, predicted 169,741 (31s)
+  fold 3: trained on 300,000 rows, predicted 176,842 (32s)
+  fold 4: trained on 300,000 rows, predicted 167,453 (32s)
+  fold 5: trained on 300,000 rows, predicted 149,099 (31s)
+  fold 6: trained on 300,000 rows, predicted 80,673 (30s)
+      clean_rows    WAPE    BIAS
+fold                            
+0          97312  0.3734 -0.0444
+1          86920  0.3605 -0.0224
+2         110857  0.3774  0.0213
+3         115309  0.3714 -0.0368
+4         111481  0.3547 -0.0064
+5          95373  0.3672 -0.0051
+6          62742  0.3811 -0.0740
+
+==========================================================================================
+2. STORE x WEEK PANEL
+==========================================================================================
+Store-weeks: 27,719 | stores: 93 | weeks: 340
+Store-weeks with promotion-event lift: 95.9%
+             L        Y  Y_ACTUAL       Z1       Z2  LOCAL_PROMOS
+count  27719.0  27719.0   27719.0  27719.0  27719.0       27719.0
+mean     398.9      3.4     196.6     16.6    183.1           1.0
+std      914.4     42.2     137.0     17.1    127.4           1.6
+min     -243.5   -238.0       0.0      0.0      0.0           0.0
+25%       46.3    -17.8     103.0      3.8     92.5           0.0
+50%      163.6     -0.1     167.0     11.7    162.4           0.0
+75%      365.1     18.8     256.0     23.9    249.1           1.0
+max    19534.4    730.3    1564.0    168.8   1047.7          16.0
+
+Share of the variation in L that remains after store and week effects: 22.1%
+(this within-week, across-store variation identifies the effect)
+
+==========================================================================================
+3. OVERALL DIVERSION RATIO (all tuna)
+==========================================================================================
+OLS (two-way FE):
+     coef      se       t  ci90_lo  ci90_hi
+L -0.0026  0.0007 -3.8577  -0.0037  -0.0015
+
+2SLS (two-way FE, instruments: expected discount volume Z1, Z2):
+     coef      se       t  ci90_lo  ci90_hi  first_stage_F
+L -0.0181  0.0046 -3.9435  -0.0256  -0.0105       982.2976
+
+-> For every extra unit sold by promoted tuna products, the non-promoted tuna products sell
+   -0.018 units (90% CI -0.026 to -0.011).
+   Cannibalization rate = 1.8% of the gross lift; net new category units = 98.2%.
+   OLS is closer to zero than 2SLS, as expected from measurement error in L (attenuation).
+
+Scope of the outcome: bystander products = 46% of all clean non-promoted tuna
+sales. Products close to their own promotion events are left out (they would break the
+lead test), so the estimate above is a LOWER BOUND for the whole assortment.
+If those products lose sales at the same rate (per unit sold), the diversion scales by 2.17:
+   scaled diversion = -0.039  ->  cannibalization rate ~ 3.9% (90% CI 2.3% to 5.6%)
+Reported range: 1.8% (bystanders only) to 3.9% (scaled). The scaled value is used for event attribution (conservative for profit).
+  [figure] reports/phase7/figures/binscatter_substitution.png
+
+==========================================================================================
+4. VALIDITY CHECKS
+==========================================================================================
+Interpretation of 'net new category units': extra tuna bought at Dominick's that did not
+come from other tuna products in the same store-week. It can be higher consumption, earlier
+purchases stored at home (no post-promotion dip was measured in Phase 6), or shoppers who
+would otherwise have bought tuna at another retailer. Store-level data cannot separate these.
+
+(a) Lead test, reduced form: outcome on this week's AND 2-weeks-later promotion volume.
+    Future promotions cannot cause this week's sales -> their coefficients should be ~0.
+                       coef       se        t
+Z1 (this week)     -0.25380  0.04837 -5.24750
+Z2 (this week)     -0.01196  0.00813 -1.47143
+Z1 (2 weeks later)  0.04046  0.03883  1.04202
+Z2 (2 weeks later)  0.01219  0.00725  1.68209
+
+(b) Instrument strength (first-stage F > 10 is the usual rule of thumb):
+    F = 982.3
+
+(c) Where does the instrument's variation come from? Mean discount depth of promotion rows by tier:
+PRICE_TIER
+Cub-Fighter    4.0
+High           9.4
+Low            5.7
+Medium         7.1
+unknown        6.9
+
+==========================================================================================
+5. DIVERSION BY PROMOTED BRAND AND WHO LOSES (2SLS, same fixed effects)
+==========================================================================================
+Units lost by ALL other tuna per extra unit of the promoted brand:
+                      coef      se       t  ci90_lo  ci90_hi  first_stage_F
+StarKist           -0.0119  0.0056 -2.1272  -0.0211  -0.0027       319.4596
+Chicken of the Sea -0.0154  0.0066 -2.3190  -0.0262  -0.0045       236.2680
+Bumble Bee         -0.0293  0.0085 -3.4290  -0.0433  -0.0152       115.1076
+Dominick's         -0.0160  0.0104 -1.5475  -0.0330   0.0010       329.5632
+Other              -0.0627  0.0449 -1.3977  -0.1365   0.0111       631.4490
+
+Diversion matrix: row = promoted brand, column = brand whose NON-promoted products gain/lose
+                    StarKist  Chicken of the Sea  Bumble Bee  Dominick's   Other
+StarKist              0.0024             -0.0035     -0.0036     -0.0066 -0.0005
+Chicken of the Sea   -0.0027             -0.0007     -0.0048     -0.0062 -0.0010
+Bumble Bee           -0.0090             -0.0026     -0.0049     -0.0095 -0.0033
+Dominick's           -0.0010              0.0005     -0.0056     -0.0086 -0.0014
+Other                -0.0329             -0.0097     -0.0089     -0.0033 -0.0079
+
+Standard errors:
+                    StarKist  Chicken of the Sea  Bumble Bee  Dominick's   Other
+StarKist              0.0027              0.0020      0.0018      0.0026  0.0007
+Chicken of the Sea    0.0020              0.0012      0.0022      0.0029  0.0008
+Bumble Bee            0.0035              0.0022      0.0029      0.0032  0.0018
+Dominick's            0.0081              0.0044      0.0037      0.0030  0.0021
+Other                 0.0287              0.0125      0.0160      0.0115  0.0106
+  [figure] reports/phase7/figures/diversion_matrix_brands.png
+
+==========================================================================================
+6. BY TUNA TYPE (light vs. white)
+==========================================================================================
+Row = promoted type, column = type losing units:
+        light   white
+light -0.0126 -0.0000
+white -0.0384 -0.0587
+Standard errors:
+        light   white
+light  0.0033  0.0011
+white  0.0168  0.0221
+Closer substitutes (same type) are expected to lose more.
+
+==========================================================================================
+7. EVENT-LEVEL ATTRIBUTION
+==========================================================================================
+In-scope events: 1,068
+  Gross extra units of promoted products : 11,087,718
+  Taken from other tuna products          : 455,050  (4.1%)
+  Net new category units                  : 10,647,554
+
+By promoted brand:
+                    events      gross  cannibalized  net_category  cannibalized_%
+BG                                                                               
+Bumble Bee             286  2679186.9      170806.8     2491613.8             6.4
+Chicken of the Sea     346  3652381.5      122100.3     3544601.3             3.3
+Dominick's             100   768275.5       26889.5      807445.7             3.5
+Other                   90   294617.1       40287.0      246594.9            13.7
+StarKist               246  3665190.2       94966.4     3557297.8             2.6
+
+Attribution uses the brand-level diversion ratios (section 5) scaled by 2.17;
+event-specific diversion is not separately identified. Phase 8 converts these units into
+gross profit.
+  [figure] reports/phase7/figures/decomposition_gross_cannibalized_net.png
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+data/processed/tna_event_cannibalization.csv
+reports/phase7/diversion_by_promoted_brand.csv, diversion_matrix_brands.csv
+
+==========================================================================================
+DONE
+==========================================================================================

@@ -1,0 +1,498 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 1 DATA UNDERSTANDING — category 'sdr'
+==========================================================================================
+UPC file     : C:\Users\HPI\PycharmProjects\PromoGuard-AI\data\raw\dominicks\sdr\upcsdr.csv
+Movement file: C:\Users\HPI\PycharmProjects\PromoGuard-AI\data\raw\dominicks\sdr\wsdr.zip
+
+==========================================================================================
+UPC FILE: SHAPE, COLUMNS, TYPES
+==========================================================================================
+Shape: 1,746 rows x 6 columns
+Memory: 0.1 MB
+
+Columns and dtypes:
+COM_CODE    int64
+UPC         int64
+DESCRIP       str
+SIZE          str
+CASE        int64
+NITEM       int64
+
+Documented columns NOT found : []
+Columns found but not expected: []
+
+==========================================================================================
+UPC FILE: SAMPLE ROWS (first 5 + random 5)
+==========================================================================================
+   COM_CODE  UPC               DESCRIP    SIZE  CASE    NITEM
+0       225  179  BLOOD GLUCOSE SCREEN    EACH     1  9990290
+1       235  418   ~DIET CRYSTAL PEPSI  24/12O     1    54950
+2       235  419  ~CRYSTAL PEPSI 24 PA  24/12O     1    54940
+3       235  420       PEPSI COLA CANS  24/12O     1    54880
+4       235  421       PEPSI DIET CANS  24/12O     1    54890
+
+     COM_CODE         UPC               DESCRIP    SIZE  CASE  NITEM
+365       225  2400013235   HAWAIIAN PUNCH DIET  12/12O     2  54830
+344       233  1690001783  CANADA DRY GRAPEFRUI    1 LT    12  51120
+715       234  4879400001  CELESTIAL LEMON ZING   16 OZ    24  78780
+70        238  1060820016  OLD TOWN GNGR ALE PP    2 LT     8  62120
+846       238  4900001906  DIET COKE 1LTR PP .7    1 LT    12  52800
+
+==========================================================================================
+UPC FILE: MISSING VALUES
+==========================================================================================
+          n_missing  pct_missing
+COM_CODE          0          0.0
+UPC               0          0.0
+DESCRIP           0          0.0
+SIZE              0          0.0
+CASE              0          0.0
+NITEM             0          0.0
+
+==========================================================================================
+UPC FILE: DUPLICATES
+==========================================================================================
+Fully duplicated rows: 0
+
+==========================================================================================
+UPC FILE: PRODUCTS
+==========================================================================================
+Unique UPCs: 1,746 (rows: 1,746)
+Duplicated UPC values: 0
+
+COM_CODE (commodity code) counts:
+COM_CODE
+234    351
+233    269
+238    241
+225    198
+237    161
+235    130
+241    111
+236    110
+227     78
+239     73
+240     21
+61       1
+224      1
+201      1
+
+Top 25 SIZE values:
+SIZE
+2 LT      264
+16 OZ     238
+6/12OZ    209
+12/12O    133
+24/12O    127
+20 OZ     124
+1 LT       87
+23 OZ      65
+8/20OZ     47
+4/10OZ     43
+32 OZ      35
+3 LT       34
+10 OZ      34
+12 OZ      28
+6/10OZ     28
+4/11OZ     21
+8/16OZ     15
+1.5 LT     14
+6/20 O     13
+6/16OZ     11
+25 OZ      11
+11.5OZ     11
+24 OZ      10
+12/16O      9
+6 CT        8
+
+40 random product descriptions:
+1010    CLEARLY CANADIAN CHE
+1582     CANFIELDS DIET COLA
+47         CANFIELD FUN PACK
+304      SCHWEPPES DRY GRAPE
+534     WRLD CLASSIC DIET CO
+1123     I.B.C. BLACK CHERRY
+48       CANFIELDS COLA 24PK
+1584          CANFIELD 50/50
+302     SCHWEPPES DRY GRP GI
+1032        A W ROOT BEER NR
+556       DOM ROOT BEER SODA
+909                   SQUIRT
+737              SPRITE N.R.
+726           COKE II 6 PACK
+1057            VERNORS DIET
+1513     CANFIELD GINGER ALE
+1695    MISTIC PAPAYA PARADI
+1147    SEAGRAM'S GINGER ALE
+231     SLICE MANDARIN ORANG
+1309       SNAPPLE ORANGEADE
+158     DIET PEPSI N.R. BOTT
+102     OLD TOWNE WILD STRAW
+994     CLEARLY CANADIAN RAS
+531     OCEAN SPRAY CHRY CID
+1701     ARIZONA MUCHO MANGO
+111     TETLEY ICED TEA W/LE
+108     $OLD TOWNE STRAW/KIW
+529     OCEAN SPRAY CRANBERR
+382     THORSPRING WATER 1 L
+285      SCHWEPPS GINGER ALE
+301     SCHWEPPES S/F SELTZE
+1697    MEGA MISTIC LEMON IC
+1529     CANFIELD STRAWBERRY
+1308        SNAPPLE LEMONADE
+572        DOM SELTZER WATER
+1577    $CANFIELD DT CHRY CH
+1591          GENERIC ORANGE
+267     CHOCOLATE MOOSE DRIN
+1401             CHERRY 7 UP
+920              SQUIRT NR $
+
+Most common first word of DESCRIP (rough brand hint, NOT a brand field):
+DESCRIP
+DIET         150
+CANFIELD      64
+SNAPPLE       57
+OLD           56
+DOM           46
+CLEARLY       36
+ARIZONA       35
+COKE          33
+MISTIC        33
+CANADA        31
+PEPSI         30
+LIPTON        27
+CRYSTAL       26
+SCHWEPPES     25
+SUNKIST       23
+CANFIELDS     23
+NEW           23
+SLICE         22
+NEHI          21
+NATURALE      21
+SPRITE        20
+ARTIC         20
+PERRIER       18
+BARQ'S        17
+OCEAN         17
+
+CASE (describe):
+count    1746.00
+mean       10.84
+std        10.41
+min         1.00
+25%         4.00
+50%         8.00
+75%        24.00
+max       240.00
+
+NITEM (describe):
+count    1.746000e+03
+mean     5.489084e+04
+std      6.538672e+06
+min     -2.684388e+08
+25%      5.205250e+04
+50%      5.726000e+04
+75%      6.400000e+04
+max      9.990290e+06
+
+==========================================================================================
+MOVEMENT FILE: SHAPE, COLUMNS, TYPES
+==========================================================================================
+Shape: 17,730,501 rows x 11 columns
+Memory: 2,133.3 MB
+
+Columns and dtypes:
+STORE           int64
+UPC             int64
+WEEK            int64
+MOVE            int64
+QTY             int64
+PRICE         float64
+SALE              str
+PROFIT        float64
+OK              int64
+PRICE_HEX         str
+PROFIT_HEX        str
+
+Documented columns NOT found : []
+Columns found but not expected: []
+
+==========================================================================================
+MOVEMENT FILE: SAMPLE ROWS (first 5 + random 5)
+==========================================================================================
+   STORE  UPC  WEEK  MOVE  QTY  PRICE SALE  PROFIT  OK         PRICE_HEX        PROFIT_HEX
+0      2  179     1     1    1   10.0  NaN    99.9   1  4024000000000000  4058F9999999999A
+1      2  179     2     0    1    0.0  NaN     0.0   1  0000000000000000  0000000000000000
+2      2  179     3     0    1    0.0  NaN     0.0   1  0000000000000000  0000000000000000
+3      2  179     4     2    1   10.0  NaN    99.9   1  4024000000000000  4058F9999999999A
+4      2  179     5     0    1    0.0  NaN     0.0   1  0000000000000000  0000000000000000
+
+          STORE         UPC  WEEK  MOVE  QTY  PRICE SALE  PROFIT  OK         PRICE_HEX        PROFIT_HEX
+15401840     59  7336023905   314     3    1   1.09  NaN   36.42   1  3FF170A3D70A3D71  404235C28F5C28F6
+12278308    124  4640010285   370     9    1   0.89    B   -9.55   1  3FEC7AE147AE147B  C02319999999999A
+7951021      71  1200000492   399    13    1   1.49  NaN   14.76   1  3FF7D70A3D70A3D7  402D851EB851EB85
+10106645    103  2950021933   371     0    1   0.00  NaN    0.00   1  0000000000000000  0000000000000000
+11198209      5  3828100329   239    31    1   0.63  NaN   35.87   1  3FE428F5C28F5C29  4041EF5C28F5C28F
+
+==========================================================================================
+MOVEMENT FILE: MISSING VALUES
+==========================================================================================
+            n_missing  pct_missing
+STORE               0         0.00
+UPC                 0         0.00
+WEEK                0         0.00
+MOVE                0         0.00
+QTY                 0         0.00
+PRICE               0         0.00
+SALE         14287219        80.58
+PROFIT              0         0.00
+OK                  0         0.00
+PRICE_HEX           0         0.00
+PROFIT_HEX          0         0.00
+
+==========================================================================================
+MOVEMENT FILE: DUPLICATES
+==========================================================================================
+Fully duplicated rows: 0
+
+==========================================================================================
+MOVEMENT: KEY DUPLICATES (UPC, STORE, WEEK)
+==========================================================================================
+Rows sharing a (UPC, STORE, WEEK) key: 0
+
+==========================================================================================
+MOVEMENT: PRODUCTS, STORES, WEEKS
+==========================================================================================
+Unique UPCs  : 1,720
+Unique stores: 93
+Unique weeks : 391  (min 1, max 399)
+Weeks missing inside the range: 8 -> [254, 255, 256, 257, 258, 259, 260, 261]
+
+Store list: [2, 5, 8, 9, 12, 14, 18, 21, 28, 32, 33, 40, 44, 45, 47, 48, 49, 50, 51, 52, 53, 54, 56, 59, 62, 64, 67, 68, 70, 71, 72, 73, 74, 75, 76, 77, 78, 80, 81, 83, 84, 86, 88, 89, 90, 91, 92, 93, 94, 95, 97, 98, 100, 101, 102, 103, 104, 105, 106, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 121, 122, 123, 124, 126, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 146]
+
+Weeks observed per store (describe):
+count     93.0
+mean     357.5
+std       94.4
+min       31.0
+25%      391.0
+50%      391.0
+75%      391.0
+max      391.0
+
+Weeks observed per UPC (describe):
+count    1720.0
+mean      165.8
+std       120.6
+min         2.0
+25%        60.0
+50%       142.5
+75%       244.0
+max       391.0
+
+UPC-store series: 112,017; rows per series (describe):
+count    112017.0
+mean        158.3
+std         122.5
+min           2.0
+25%          54.0
+50%         120.0
+75%         243.0
+max         391.0
+
+Rows per week (describe):
+count      391.0
+mean     45346.5
+std      14581.7
+min      28152.0
+25%      29491.0
+50%      43663.0
+75%      58581.5
+max      77710.0
+
+==========================================================================================
+MOVEMENT: OK FLAG (data-quality flag)
+==========================================================================================
+OK
+1    17476933
+0      253568
+
+==========================================================================================
+MOVEMENT: QTY (bundle size, e.g. 3 for $1)
+==========================================================================================
+QTY
+1     17376170
+4       125831
+2        89415
+3        78021
+5        32842
+6        16275
+24        5184
+8         2310
+10        2103
+7         1652
+12         698
+
+==========================================================================================
+MOVEMENT: PRICE (shelf price for QTY units)
+==========================================================================================
+count    1.773050e+07
+mean     1.429000e+00
+std      1.866000e+00
+min      0.000000e+00
+1%       0.000000e+00
+5%       0.000000e+00
+25%      0.000000e+00
+50%      8.900000e-01
+75%      2.000000e+00
+95%      5.490000e+00
+99%      7.890000e+00
+max      1.188800e+02
+
+PRICE == 0 : 6,923,310
+PRICE <  0 : 0
+PRICE NaN  : 0
+
+Unit price = PRICE / QTY (describe, PRICE > 0 only):
+count    1.080719e+07
+mean     2.302000e+00
+std      1.894000e+00
+min      1.000000e-02
+1%       2.000000e-01
+50%      1.590000e+00
+99%      8.290000e+00
+max      1.188800e+02
+
+==========================================================================================
+MOVEMENT: MOVE (units sold)
+==========================================================================================
+count    17730501.00
+mean           17.07
+std            87.65
+min             0.00
+1%              0.00
+5%              0.00
+25%             0.00
+50%             2.00
+75%            10.00
+95%            70.00
+99%           252.00
+99.9%         935.00
+max         99999.00
+
+MOVE == 0 : 6,920,696 (39.03%)
+MOVE <  0 : 0
+Non-integer MOVE values: 0
+MOVE > 0 but PRICE <= 0: 2,614
+MOVE == 0 and PRICE > 0: 0
+
+Total dollar sales (PRICE*MOVE/QTY, PRICE>0): $490,442,133
+
+==========================================================================================
+MOVEMENT: PROFIT (documented as gross margin, %)
+==========================================================================================
+count    1.773050e+07
+mean     1.180700e+01
+std      1.965500e+01
+min     -9.999000e+01
+1%      -4.444000e+01
+5%      -1.022000e+01
+25%      0.000000e+00
+50%      4.030000e+00
+75%      2.465000e+01
+95%      4.378000e+01
+99%      5.486000e+01
+max      9.999000e+01
+
+PROFIT <  0   : 1,374,139
+PROFIT == 0   : 6,942,744
+PROFIT >= 100 : 0
+PROFIT <= -100: 0
+
+==========================================================================================
+MOVEMENT: SALE (deal code)
+==========================================================================================
+             n     pct
+SALE                  
+NaN   14287219  80.580
+B      1666010   9.396
+S      1664212   9.386
+G        73034   0.412
+C        40026   0.226
+
+Mean / median by deal code (PRICE > 0 rows):
+             MOVE        UNIT_PRICE         PROFIT       
+             mean median       mean median    mean median
+SALE_CODE                                                
+B          45.292   12.0      2.110   1.29  15.374  20.20
+C          54.404   18.0      1.545   0.99  18.719  20.20
+G          67.999   22.0      1.334   1.43  -0.259   0.18
+S          50.332   14.0      2.356   1.49   7.940  12.84
+
+Deal code vs. price >=5% below its UPC-store median (row % within code):
+PRICE_DROP_5PCT  False  True 
+SALE_CODE                    
+B                26.79  73.21
+C                90.87   9.13
+G                13.81  86.19
+S                23.62  76.38
+
+Counts:
+PRICE_DROP_5PCT   False     True      All
+SALE_CODE                                
+B                442391  1209209  1651600
+C                 35651     3583    39234
+G                  9814    61226    71040
+S                389413  1259296  1648709
+All              877269  2533314  3410583
+
+Share of rows with a B/C/S deal code, by week (describe):
+count    391.00
+mean      19.22
+std        5.57
+min        0.00
+25%       15.63
+50%       18.47
+75%       22.17
+max       41.45
+Weeks with 0% flagged: [219]
+
+==========================================================================================
+JOIN CHECK: MOVEMENT <-> UPC on UPC
+==========================================================================================
+UPCs in movement: 1,720 | in UPC file: 1,746
+In movement but NOT in UPC file: 0
+In UPC file but NOT in movement: 26
+Movement rows without product info: 0
+
+Top 20 UPCs by total units sold:
+       UPC  TOTAL_UNITS              DESCRIP   SIZE  COM_CODE
+1200000230     10176741       PEPSI COLA N/R   2 LT       238
+4900000639      8434043    COCA-COLA CLASSIC   2 LT       238
+4900000663      6076906            DIET COKE   2 LT       238
+7800000034      5951974         SEVEN-UP N/R   2 LT       238
+3828100253      5285331             DOM COLA  12 OZ       227
+1200000231      5085736       PEPSI DIET N/R   2 LT       238
+3828100257      5067188       DOM CREME SODA  12 OZ       227
+1200000013      4770885      PEPSI-COLA CANS 6/12OZ       237
+3828100265      4472211   DOM ROOT BEER SODA  12 OZ       227
+3828100249      4268002       DOM GINGER ALE  12 OZ       227
+3828100261      4219306      DOM ORANGE SODA  12 OZ       227
+       420      4009503      PEPSI COLA CANS 24/12O       235
+3828100317      3981170 DOM BLACK CHERRY SOD  12 OZ       227
+3828100301      3842127  DOM LEMON LIME SODA  12 OZ       227
+3828100305      3787044       DOM GRAPE SODA  12 OZ       227
+4900000634      3782875 COCA-COLA CLASSIC CA 6/12OZ       237
+3828100321      3350902      DOM FRUIT PUNCH  12 OZ       227
+2950001933      3242055     RC COLA PPD $.99   2 LT       238
+7800000038      3106731        SEVEN-UP CANS 6/12OZ       237
+4900000935      3090389 COKE DIET CAFFEINE F   2 LT       238
+Top 10 UPCs = 19.7% of units
+Top 20 UPCs = 31.7% of units
+Top 50 UPCs = 51.5% of units
+
+==========================================================================================
+DONE
+==========================================================================================
+Report saved to: C:\Users\HPI\PycharmProjects\PromoGuard-AI\reports\phase1\phase1_sdr_report.txt

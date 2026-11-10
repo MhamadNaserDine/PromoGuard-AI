@@ -1,0 +1,321 @@
+id,group,question,expected_tool,tools_used,expected_number,tool_ok,number_ok,rule_ok,cat_ok,pass,seconds,error,answer
+1,tuna,How many promotion events did you analyse?,get_overview,"get_overview,get_overview",1068,True,True,True,True,True,5.0,,"I analysed two categories, and the event counts come from the tool data (observed events, with effects modelled as causal estimates):
+
+| Category | Promotion events | Products |
+|---|---|---|
+| Canned tuna | 1,068 | 60 |
+| Carbonated soft drinks | 22,469 | 497 |
+| **Total** | **23,537** | 557 |
+
+Both categories cover Dominick's Finer Foods (Chicago), 1989–1997. Each event is a chain promotion that ran in at least 20 stores.
+
+I can also break the results down for one category, such as tuna or soft drinks. I can show lift, gross profit, or which events were winners and which lost money."
+2,tuna,What is the typical (median) sales lift of a promotion?,get_overview,get_overview,49.6,True,True,True,True,True,3.7,,"For canned tuna, the typical (median) promotion lifts sales by about **+50%**. You didn't name a category, so I used tuna. This is a causal estimate, based on a counterfactual sales model and valid under the model's stated assumptions. It covers 1,068 chain promotion events.
+
+- The pooled lift is much higher, about +218%. A few very large events pull it up, so the median is the better guide to a typical promotion.
+- About 69% of events show a statistically significant lift.
+
+**Recommendation:** Plan around +50% for a typical tuna promotion, not +218%. If you want the same figure for soft drinks, I can pull it."
+3,tuna,What share of the extra units was taken from other tuna?,cannibalization/get_overview,cannibalization,4.1,True,True,True,True,True,4.5,,"About **4.1%** of the extra units came from other tuna. This is a causal estimate, and the question didn't name a category, so I used tuna.
+
+- Promoted tuna sold about 11.1M extra units.
+- About 455k of those units were taken from other tuna products.
+- That leaves about 10.6M net new units.
+
+By brand, the figures below are units of non-promoted tuna lost per 100 extra promoted units:
+
+| Promoted brand | Lost per 100 extra units |
+|---|---|
+| StarKist | 1.2 |
+| Chicken of the Sea | 1.5 |
+| Bumble Bee | 2.9 |
+
+Bumble Bee has the highest cannibalization of the three. The Dominick's and ""Other"" figures are not statistically significant.
+
+These brand figures are a lower bound. The tool says the full-assortment figure is about 2.17 times larger.
+
+**Recommendation:** Cannibalization is low, so don't count it against tuna promotions. Check Bumble Bee promotions a little more closely, because they take the most from other tuna."
+4,tuna,"If the retailer pays the whole discount, what was the total net gross-profit impact of all promotions?",get_overview,get_overview,2546.0,True,True,True,True,True,4.3,,"Your question didn't name a category, so I used canned tuna.
+
+**Result (causal estimate, ""retailer pays the whole discount"" view, which is the conservative one):** across all 1,068 tuna promotion events, the net gross-profit impact was about **+$2.5k**. That is roughly break-even.
+
+- The discounts cost about $3.27M. The extra units sold, net of cannibalization (4.1% of extra units) and post-promo dips, almost exactly paid that back.
+- 61.6% of events were profitable in this view.
+- In the ""recorded cost"" view, which includes estimated supplier funding of about $846k, the impact rises to about +$849k. Supplier funding is estimated, not observed.
+- This is gross profit (margin on average acquisition cost), not net profit.
+
+**Recommendation:** treat tuna promotions as profitable only where the supplier funds part of the discount. Check the funding with break-even funding before agreeing to a deal.
+
+I can run the same figures for soft drinks if you want them."
+5,tuna,How much did suppliers fund in total (estimated)?,get_overview,get_overview,846093.0,True,True,True,True,True,4.8,,"Your question didn't name a category, so I used canned tuna.
+
+- **Estimated supplier funding:** about **$846k** across the 1,068 tuna promotion events (1989–1997).
+- **Basis:** this is a model estimate, not observed data. Supplier funding is inferred from the gap between the two cost views.
+- **Share of discount cost:** the retailer's total discount cost was about $3.27M, so suppliers covered roughly 26% of it.
+- **Effect on gross profit:**
+  - In the conservative view, where the retailer pays the whole discount, net gross profit is only about $2.5k.
+  - In the recorded-cost view, which includes supplier funding, net gross profit is about $849k.
+  - Nearly all the tuna profit therefore depends on supplier funding.
+
+I can run the same figure for soft drinks if you want it.
+
+**Recommendation:** Treat supplier funding as a condition for running tuna promotions. Use the break-even funding tool to check each deal before you agree to it."
+6,tuna,How much gross profit per $1 of discount do discounts of 20% or more return when the retailer pays?,compare_groups,"compare_groups,report_card_summary",-0.24,True,True,True,True,True,5.2,,"For canned tuna (you didn't name a category, so I used tuna), discounts of 20% or more return **–$0.24 of gross profit per $1 of discount** when the retailer pays the whole discount. This is a causal estimate from past events.
+
+- **Events:** 112 past events had discounts of 20% or more.
+- **Lift:** They raised sales by about +845% (pooled).
+- **Net gross profit:** About –$511k across those events.
+- **Profitable events:** Only 41% made money.
+- **Recorded-cost view:** The return is +$0.12 per $1, or about +$254k. This view includes supplier funding, which is estimated rather than observed.
+- **Other depths for comparison:** Under the same retailer-pays view, 10–20% returns $0.37 per $1 and 5–10% returns $0.38. Discounts under 5% return $1.25.
+
+**Recommendation:** Don't run discounts of 20% or more unless the supplier funds a large share of the discount. I can calculate the break-even funding for a specific product if you'd like."
+7,tuna,Is the pooled lift bigger during Lent or outside Lent?,compare_groups,compare_groups,380.79,True,True,True,True,True,4.8,,"I used canned tuna, because you didn't name a category. Lent is also a tuna season.
+
+**The pooled lift is bigger during Lent.** This is a causal estimate under stated assumptions.
+
+| Season | Events | Pooled lift | Median event lift |
+|---|---|---|---|
+| Lent | 266 | +381% | +54% |
+| Not Lent | 802 | +164% | +48% |
+
+The typical (median) event differs much less than the pooled figure. A few very large Lent events are probably driving the pooled number.
+
+A bigger lift does not mean more profit. Gross profit tells a different story:
+- **Retailer pays the whole discount (conservative view):** Lent lost about $253k, or –$0.15 per discount dollar. Outside Lent made about +$256k, or +$0.16 per discount dollar.
+- **Recorded cost view (includes estimated supplier funding):** the two seasons are close, at about $447k for Lent and $402k outside Lent. Both return $0.26 per discount dollar.
+
+**Recommendation:** Run Lent promotions only with supplier funding. Without it, they lose money on average, even though they lift sales the most."
+8,tuna,"What is the best discount for StarKist chunk light tuna in water 6 oz, 2 weeks, retailer pays?",best_discount,"list_products,best_discount",3355.0,True,True,True,True,True,7.6,,"**Best discount: 15% off.** This is a simulation, not a guarantee. It uses the ""retailer pays the whole discount"" view (the conservative one), and the profit figures are gross profit. The product is StarKist chunk light tuna in water (6.12 oz, regular price $0.97), for 2 weeks, outside Lent.
+
+| Discount | Lift | Net gross profit vs. no promo |
+|---|---|---|
+| 10% | +100% | +$2.0k |
+| **15%** | **+193%** | **+$3.4k** |
+| 20% | +200% | +$1.8k |
+| 25% | +208% | +$0.2k |
+| 30% | +321% | –$0.5k |
+
+- **Why 15%:** Going from 15% to 20% adds almost no extra volume, but you give up margin on every unit, so profit drops by about half.
+- **Deeper cuts lose money:** 30% and 40% lose gross profit. The 40% scenario is also an extrapolation, because the data has few deals that deep, so treat it as unreliable.
+- **Product match:** Two StarKist 6 oz products look similar. I picked the one whose name says ""WA"" (water), ""STAR K CH LT TUNA WA"". The other is ""STAR KIST CH LT TUNA"", with no ""WA"" in its name.
+
+**Recommendation:** Run 15% off. If a supplier will fund part of the discount, I can re-run the simulation with that share."
+9,tuna,Simulate 20% off on StarKist chunk light tuna in water 6 oz for 2 weeks. Expected units?,simulate_promotion,"list_products,simulate_promotion",35281.0,True,True,True,True,True,7.1,,"**Simulation for StarKist chunk light tuna in water, 6.12 oz (20% off for 2 weeks, not Lent, no supplier funding):**
+
+- **Expected units:** about 35,300. Without a promotion, the model expects about 11,800 units, so that is a lift of about +200%.
+- **Price:** $0.97 regular, $0.78 on promotion.
+- **Cannibalization:** about 600 units taken from other tuna products.
+- **Gross profit:** about +$1.8k in the ""retailer pays the whole discount"" view, which is the conservative one. The 80% range is -$0.4k to +$5.3k, so a loss is possible. Each discount dollar returns only $0.27 of gross profit.
+
+This is a model simulation, not a guarantee. The model gave no extrapolation warning for this discount depth.
+
+The product list has two similar StarKist 6.12 oz chunk light items. I used the one labeled ""WA"" (water), product ID 8000000245. The other is ""STAR KIST CH LT TUNA"", ID 8000000280.
+
+**Recommendation:** The profit range includes losses, so I would negotiate supplier funding before running this. I can calculate the break-even funding level or the best discount for this product if you want."
+10,tuna,What share of a 30% discount must the supplier fund for Bumble Bee chunk light in water 6 oz (2 weeks) so we break even?,break_even_funding,"list_products,break_even_funding",6.0,True,True,True,True,True,4.9,,"For Bumble Bee chunk light in water (6.12 oz, regular price $0.89), the supplier must fund about **6%** of a 30% discount over 2 weeks for you to break even. This is a simulation, not a guarantee.
+
+- **No funding:** the retailer pays the whole discount (the conservative cost view). Gross profit is about **–$0.9k** against a discount cost of about $16.0k.
+- **Break-even:** 6% of the $16.0k discount cost is about $1.0k. That covers the $0.9k gap.
+- The tool returned no extrapolation warning.
+
+Recommendation: ask the supplier for at least 6% funding. A higher share, such as 10% or more, would leave a safety margin because this is a simulation."
+11,tuna,How many promotions are volume traps?,report_card_summary,report_card_summary,156,True,True,True,True,True,4.5,,"You didn't name a category, so I used canned tuna.
+
+**156 of the 1,068 tuna promotions (about 15%) are volume traps.** These events sold a lot more units but still lost money. The figures below are causal estimates of gross profit.
+
+| View | Gross profit of volume traps |
+|---|---|
+| Retailer pays the whole discount (conservative) | –$308k |
+| Recorded cost (includes estimated supplier funding) | –$214k |
+
+For comparison, 658 events (62%) are winners, 61 (6%) are funded wins, and 193 (18%) are losers.
+
+**Recommendation:** Redesign the volume traps with a shallower discount. I can find the worst ones or test better discounts for specific products. I can also run the same check for soft drinks."
+12,tuna,Which promotion lost the most gross profit when the retailer pays?,find_events,find_events,-126771.0,True,True,True,True,True,5.9,,"I assumed canned tuna, since you didn't name a category.
+
+**Biggest loss (retailer-pays-the-whole-discount view, the conservative one):** Chicken of the Sea Chunk Light Tuna 6 oz, event #283. It ran for 1 week in Lent, starting 21 Feb 1991, in 81 stores.
+
+- **Discount:** about 68% on average.
+- **Lift:** very large, from about 3.5k expected units to about 437k actual units. That is a causal estimate.
+- **Gross profit:** about **–$127k** when the retailer pays the whole discount. The discount cost was about $269k.
+- **Recorded-cost view:** the same event shows about +$120k. That view includes an estimated $247k of supplier funding. The funding is estimated, not observed.
+
+The next biggest losses were:
+
+| Event | Discount | Gross profit, retailer pays |
+|---|---|---|
+| Chicken of the Sea Chunk Light, Mar 1992 | 53% | –$69k |
+| Bumble Bee Chunk Light, Jul 1994 | 45% | –$53k |
+
+**Recommendation:** Don't run discounts of 50% or more unless the supplier pays a large share of the discount. Use `break_even_funding` to find the share needed."
+13,tuna,What is the most important driver of promotion lift?,lift_drivers,lift_drivers,,True,True,True,True,True,3.9,,"For canned tuna, the most important driver of promotion lift is **discount depth**. (You didn't name a category, so I used tuna.)
+
+These are model estimates (SHAP importance). They show associations, not causes. Discount depth scores 0.41. The next factors score far lower:
+
+| Factor | Importance |
+|---|---|
+| Discount depth | 0.41 |
+| Duration (weeks) | 0.07 |
+| Regular price | 0.07 |
+| Regular price per oz | 0.05 |
+| Stores with a price cut | 0.05 |
+
+Discount depth matters about 5–6 times more than the next factor. Deeper discounts bring more lift, but lift is not profit. Before you choose a depth, check it with `best_discount` or `break_even_funding`.
+
+I can run the same check for soft drinks if you'd like."
+14,tuna,Which customer group reacts most strongly to a 25% discount?,customer_groups,customer_groups,,True,True,True,True,True,5.5,,"I used canned tuna, because you didn't name a category and customer groups exist for tuna only.
+
+**At a 25% discount, ""Older, budget-conscious"" stores react most strongly.** They sell about **+7.1% more than the average store** (90% range +5.7% to +8.3%). This is a causal estimate that compares stores within the same promotions. It covers store groups, not individual customers.
+
+| Group | Extra sales vs average store at 25% |
+|---|---|
+| Older, budget-conscious | **+7.1%** (significant) |
+| Urban low-income | −1.6% (not significant) |
+| Young families | −3.5% (significant) |
+| Affluent professionals | −3.8% (significant) |
+
+- **Depth matters less than where you run it.** The best discount is about 15% in every group.
+- **Urban low-income stores are the strongest responders at 10%** (+5.9%). They fade at 25%.
+- **Profit per store.** The best promotion per store earns about $63 gross profit in Urban low-income stores and $55 in Older, budget-conscious stores.
+
+**Recommendation:** If you run a 25% discount, target the Older, budget-conscious stores. For most groups, a shallower discount of about 15% is the better choice."
+15,tuna,"What is the best product to promote in Urban low-income stores, and at what discount?",personalized_plan,personalized_plan,,True,True,True,True,True,4.8,,"Customer groups exist only for canned tuna, so I used tuna.
+
+**Best pick for Urban low-income stores: StarKist Chunk Light Tuna in Water (6.12 oz, regular price $1.08), at a 15% discount.**
+
+- **Result:** The simulation gives about $443 gross profit over a 2-week promotion. That is about $63 per store across the 7 stores in this group.
+- **Close second:** Chicken of the Sea Chunk Light (6 oz) is at 15% too. It gives about $436, or $62 per store.
+- **Discount:** 15% is also the best chain-wide discount for these products. It is not a rare depth, so there is no extrapolation warning.
+
+This is a simulation by store customer group, not a guarantee. It is not individual-customer targeting. The tool did not state which cost view it uses, so I can't tell you.
+
+**Recommendation:** Run StarKist at 15% for 2 weeks in these stores. You could test Chicken of the Sea at the same depth, since the two are so close."
+16,tuna,Which individual customers should get a personal coupon?,,customer_groups,,True,True,True,True,True,6.5,,"I can't pick individual customers for coupons. The data is weekly store-level scanner data with no customer records, and this project doesn't do individual targeting. I'd also decline to do it for individuals.
+
+What I can do is target by **store customer group**. This is a causal estimate for canned tuna. The figures are extra sales versus the average store.
+
+| Group | Extra sales at 15% off | Best promo gross profit per store |
+|---|---|---|
+| Urban low-income | +3.4% (significant) | $63 |
+| Older, budget-conscious | +3.3% (significant) | $55 |
+| Young families | −3.6% (significant) | $42 |
+| Affluent professionals | −1.5% (significant) | $38 |
+
+- **Best discount:** about 15% in every group. The groups differ more in where a promotion pays and which products to promote than in how deep the discount should be.
+- **Older, budget-conscious stores:** they also respond well at 25% off (+7.1%). The other groups don't.
+- **Category:** you didn't name one, so I used tuna. Customer groups aren't available for soft drinks.
+
+**Recommendation:** run your tuna promotions in the Urban low-income and Older, budget-conscious stores at about 15% off. I can pull a product-level plan for either group if you want one."
+17,soft drinks,How many soft-drink promotion events did you analyse?,get_overview,get_overview,22469,True,True,True,True,True,3.3,,"I analysed **22,469 soft-drink promotion events**. They cover 497 products at Dominick's Finer Foods (Chicago) from 1989 to 1997. Each event ran in at least 20 stores. This is observed event data. The lift and profit figures built on it are causal estimates."
+18,soft drinks,What is the typical (median) sales lift of a soft-drink promotion?,get_overview,get_overview,173.8,True,True,True,True,True,4.4,,"The typical (median) soft-drink promotion lifts sales by about **+174%**. That means unit sales are roughly 2.7 times the no-promotion baseline. This is a causal estimate from a counterfactual sales model, covering 22,469 chain promotion events from 1989 to 1997.
+
+The pooled lift is higher, at about +291%. Big-volume events pull that figure up, so the median is the better guide to a typical event.
+
+A large lift does not mean a promotion makes money. In the ""retailer pays the whole discount"" view, only 19% of events were profitable on gross profit. Net gross profit in that view was about -$56.7m. In the ""recorded cost"" view, which includes estimated supplier funding, it was about -$9.3m.
+
+Before running a promotion, check its break-even supplier funding. I can do that for a specific product."
+19,soft drinks,"If the retailer pays the whole discount, what was the total net gross-profit impact of all Coke and Pepsi type soft-drink promotions (all soft drinks)?",get_overview,"get_overview,compare_groups",-56724063.0,True,True,True,True,True,5.6,,"Under the ""retailer pays the whole discount"" view, all soft-drink promotions together lost about **$56.7M** of gross profit (1989–97, 22,469 chain events). This is a causal estimate under stated assumptions, not observed data. Profit here means gross profit, not net profit.
+
+- **Discount cost:** the discounts cost about $111.9M. The extra volume (about 114M units) did not earn that back.
+- **Profitable events:** only 19.4% of events made money in this view.
+- **Coke and Pepsi groups:** Coca-Cola Co. lost about $18.4M and PepsiCo about $20.3M, so about $38.7M combined. Those two groups are part of the $56.7M total.
+- **Recorded-cost view:** the loss shrinks to about $9.3M. That view includes estimated supplier funding of about $47.5M, which is estimated, not observed.
+
+**Recommendation:** run Coke and Pepsi promotions only when the supplier funds a large share of the discount. Without funding, most of these events lose gross profit."
+20,soft drinks,"For soft drinks, how much gross profit per $1 of discount do discounts of 20% or more return when the retailer pays?",compare_groups,"compare_groups,report_card_summary,get_overview",-0.55,True,True,True,True,True,6.2,,"For soft drinks, discounts of 20% or more **lose** gross profit when the retailer pays the whole discount. Each $1 of discount returns about **–$0.55** in gross profit. This is a causal estimate under stated assumptions. It covers 11,188 events and uses the conservative ""retailer pays the whole discount"" cost view.
+
+- **Total loss:** about –$49.4M of gross profit.
+- **Profitable events:** only 5% of these events made money.
+- **Lift:** sales rose about +444% (median event +306%). Most events are still ""volume traps"" (65%), meaning sales jump but profit falls.
+- **Recorded-cost view:** this view includes supplier funding, which is estimated rather than observed. Here the return is about –$0.11 per $1, so the loss is smaller but still negative.
+
+For comparison, the return per $1 is –$0.37 for 10–20% discounts and –$0.12 for discounts under 5%.
+
+**Recommendation:** Avoid deep discounts of 20% or more on soft drinks unless the supplier funds a large share of the discount. I can calculate the break-even supplier funding for a specific product if you'd like."
+21,soft drinks,What share of the extra soft-drink units was taken from other soft drinks?,cannibalization/get_overview,cannibalization,4.5,True,True,True,True,True,5.9,,"About **4.5%** of the extra soft-drink units came from other soft drinks. This is a causal estimate (store×week fixed effects plus instrumental variables).
+
+- Extra units from promotions: about 113.9M.
+- Taken from other soft drinks: about 5.2M.
+- Net new units: about 108.7M, or about 95.5%.
+
+By promoted brand, per 100 extra units, other soft drinks lose:
+
+| Brand | Units lost | Significant? |
+|---|---|---|
+| PepsiCo | 2.26 | Yes. The 90% CI excludes 0. |
+| Coca-Cola Co. | 0.8 | No |
+| 7-Up | 1.69 | No |
+| Dominick's | −0.57 | No |
+| Other | −0.55 | No |
+
+The tool says the by-brand figures are a lower bound. It says the full-assortment figure is about 5.68 times larger. So the true cannibalization could be higher than these numbers. The tool does not say whether the 4.5% headline already includes that adjustment, so treat 4.5% as a floor.
+
+Recommendation: promotions in this category mostly bring in new volume. If you want to limit cannibalization, check PepsiCo promotions first, since that is the only brand with a clearly significant effect."
+22,soft drinks,"What is the best discount for Pepsi cola 2-litre (PEPSI COLA N/R), 2 weeks, retailer pays?",best_discount,"list_products,best_discount",1119.0,True,True,True,True,True,6.4,,"**Best option for Pepsi 2 L (PEPSI COLA N/R), 2 weeks, retailer pays the whole discount (conservative view): no price cut. Use a deal flag or display at the regular price of $1.59.** This is a simulation, not a guarantee. Profit means gross profit.
+
+| Option | Lift | Gross profit vs. no promo |
+|---|---|---|
+| Deal flag, no price cut | +22% | **+$1.1k** |
+| 5% off | +41% | +$0.3k |
+| 10% off | +52% | −$1.2k |
+| 15% off | +84% | −$2.7k |
+| 20% off | +90% | −$5.1k |
+| 30% off | +208% | −$12.9k |
+| 40% off | +454% | −$33.2k |
+
+Any price cut gives more volume, but the retailer loses margin on every unit sold. Part of the extra volume also comes from other soft drinks. At 5% off, the model estimates about 830 cannibalized units. None of the scenarios triggered an extrapolation warning.
+
+**Recommendation:** Run the promotion as a flag or feature at regular price. If you want a real price cut, keep it to 5% or less, or ask the supplier to fund it. I can run the break-even supplier funding for a specific depth if you'd like."
+23,soft drinks,What share of a 30% discount must the supplier fund on Pepsi cola 2-litre (2 weeks) so we break even?,break_even_funding,"list_products,break_even_funding",55.0,True,True,True,True,True,5.3,,"The supplier would need to fund about **55%** of a 30% discount. This is a simulation, not a guarantee. It is for Pepsi Cola N/R 2 L (regular price $1.59, unit cost $1.23) over 2 weeks, outside Lent.
+
+- Under the conservative view, where the retailer pays the whole discount, the promotion loses about **$12.9k** of gross profit.
+- The discount costs about **$23.5k**. At 55% funding, the supplier covers enough of that to bring gross profit back to about zero.
+- Break-even is achievable, and the tool gave no extrapolation warning for a 30% discount.
+
+**Recommendation:** Ask for at least 55% supplier funding before agreeing to a 30% Pepsi 2 L promotion. Otherwise, try `best_discount` to find a shallower discount that pays off with less funding."
+24,soft drinks,Which soft-drink promotion lost the most gross profit when the retailer pays?,find_events,find_events,-501203.0,True,True,True,True,True,5.4,,"The soft-drink promotion with the biggest gross profit loss, when the retailer pays the whole discount, was **Pepsi Cola Cans (24/12 oz), event 85**. It ran for 3 weeks from 21 Nov 1996, in 83 stores, at a mean discount of about 38%.
+
+- **Gross profit:** about **–$501k** in the ""retailer pays the whole discount"" view. This is the conservative view.
+- **Discount cost:** about $576k.
+- **Volume:** the promotion sold about 175k extra units, a lift of roughly +4,200%. About 22k of those units were taken from other soft drinks.
+- **Recorded-cost view:** the loss shrinks to about –$70k. That view includes an estimated $431k of supplier funding, and the funding is estimated, not observed.
+
+Two other events lost almost as much in the conservative view:
+
+| Event | Product | Gross profit, retailer pays |
+|---|---|---|
+| 79 | Pepsi Cola Cans, 1996 | –$497k |
+| 16892 | Coca-Cola Classic, 6/12 oz, 1996 | –$496k |
+
+These are causal estimates under stated assumptions, not exact observed figures. All three events combined a discount near 30–40% with a long run. My recommendation is to avoid discounts that deep unless the supplier funds the promotion. You can check the funding level needed with the break-even funding tool."
+25,soft drinks,"For soft drinks, do deals without a price cut lose less gross profit per $1 of discount than price cuts (retailer pays)?",compare_groups,compare_groups,-0.26,True,True,True,True,True,5.3,,"Yes. In soft drinks, deals with no price cut lose less gross profit per $1 of discount than price cuts. This is a causal estimate under stated assumptions, in the ""retailer pays the whole discount"" view (the conservative one).
+
+| Promo type | Events | Lift | Gross profit per $1 of discount | Total gross profit impact | Events that made money |
+|---|---|---|---|---|---|
+| Deal code, no price cut | 2,909 | +181% | **-$0.26** | -$0.6M | 47% |
+| Price promotion | 19,560 | +304% | **-$0.51** | -$56.1M | 15% |
+
+- **Why the gap:** price cuts lift sales more, but they give away far more margin. Roughly half of each discount dollar is lost on price cuts, against about a quarter on no-price-cut deals.
+- **Recorded cost view:** this view includes supplier funding, which is estimated, not observed. The no-price-cut deals return +$0.38 per $1, and price cuts still lose $0.09 per $1.
+- **Limit:** the two promo types may not run on the same products or in the same weeks, so the gap is not a pure like-for-like comparison.
+
+**Recommendation:** where the goal is protecting gross profit, favor no-price-cut deals. Only run price cuts where the supplier funds enough of the discount. I can check the break-even funding for a specific product if you want."
+26,both,Do promotions pay off better for canned tuna or for soft drinks?,compare_categories/get_overview,compare_categories,"[-0.51, -56724063.0]",True,True,True,True,True,5.6,,"Canned tuna pays off better. These are causal estimates (same method for both categories) of gross profit, not net profit.
+
+| | Tuna | Soft drinks |
+|---|---|---|
+| Events | 1,068 | 22,469 |
+| Pooled sales lift | +218% | +291% |
+| Median event lift | +50% | +174% |
+| Cannibalization (share of extra units) | 4.1% | 4.5% |
+| Profit, retailer pays the whole discount (conservative view) | about +$2.5k (roughly break-even) | about –$56.7M |
+| Profit, recorded cost view (includes estimated supplier funding) | about +$849k | about –$9.3M |
+| Events profitable (conservative view) | 62% | 19% |
+
+- **Lift:** Soft drinks react more strongly to discounts, but that extra volume doesn't turn into profit.
+- **Depth:** Soft drinks lose money at every discount depth, and the loss grows with the discount. In the conservative view, they lose $0.55 per discount dollar at 20% or more.
+- **Tuna depth:** Shallow tuna discounts under 5% do best, at +$1.25 gross profit per discount dollar. Discounts of 20% or more lose money, at –$0.24 per discount dollar.
+- **Supplier funding:** The recorded-cost figures depend on supplier funding, which is estimated, not observed. Treat them with caution.
+
+**Recommendation:** Keep tuna promotions shallow, under 10%. For soft drinks, cut deep discounts unless the supplier funds them. I can run the break-even funding tool for a specific product if you want."

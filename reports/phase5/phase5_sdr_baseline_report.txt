@@ -1,0 +1,126 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 5 BASELINE (COUNTERFACTUAL) DEMAND MODEL — carbonated soft drinks
+==========================================================================================
+XGBoost available: True
+Split: train weeks <= 225 | validation 226-277 | test > 277
+Feature table: 7,478,392 rows x 57 columns (223s)
+
+==========================================================================================
+0. TRAINING ROW SELECTION
+==========================================================================================
+  all panel rows                                           7,478,392
+  regular-price rows                                       4,460,543
+  + coverage OK (no 1996 gap etc.)                         4,460,543
+  + < 20% of other stores promote the product              4,225,685
+  + >= 4 weeks of regular history                          4,051,444
+
+'Regular' rows during chain promotions of the same product: 234,858
+  median sales vs. own 13-week level: 1.05x  (clean regular rows: 0.98x)
+  -> these rows behave like promotions and are excluded from training.
+
+==========================================================================================
+1. MODEL COMPARISON (fit on TRAIN, scored on VALIDATION)
+==========================================================================================
+Regular-week rows: train 2,121,460 | validation 492,662
+  note: ['PRODUCT_ID'] have > 250 levels -> used as ordinal numbers in hist_gbm
+  fitted ridge          in    70s
+  fitted random_forest  in    37s
+  fitted hist_gbm       in    79s
+  fitted xgboost        in   102s
+
+Validation results (lower is better except R2).
+WAPE_units: per store-week | WAPE_product_week: summed over stores (the level used for promotions)
+               fit_seconds  MAE_log  RMSE_log  R2_log  WAPE_units  BIAS_units  WAPE_product_week  BIAS_lent
+model                                                                                                      
+naive_last             0.0   0.4158    0.5634  0.7258      0.5310      0.3336             0.3698     0.3181
+moving_avg_13          0.0   0.3512    0.4603  0.8170      0.3601      0.1161             0.2050     0.0809
+ridge                 69.7   0.3584    0.4708  0.8086      0.3350      0.0048             0.1816    -0.0279
+random_forest         37.2   0.3471    0.4459  0.8283      0.3201      0.0133             0.1598     0.0174
+hist_gbm              79.4   0.3510    0.4525  0.8232      0.3309     -0.0208             0.1744    -0.0125
+xgboost              102.2   0.3554    0.4579  0.8189      0.3319     -0.0168             0.1745    -0.0020
+
+Selected model (lowest validation WAPE): random_forest
+
+==========================================================================================
+2. FINAL MODEL (random_forest) — refit on TRAIN+VALIDATION, evaluated ONCE on TEST
+==========================================================================================
+Test rows (regular weeks): 1,437,322   smearing factor: 1.140
+               MAE_log  RMSE_log  R2_log  WAPE_units  BIAS_units
+random_forest   0.3694    0.4930  0.8051      0.3687     -0.0059
+moving_avg_13   0.3794    0.5155  0.7868      0.4128      0.0789
+
+Test WAPE at product-week level (summed over stores): 0.2121
+WAPE improvement over the 13-week moving average: 10.7%
+
+==========================================================================================
+3. ERROR BY SEGMENT (TEST, regular weeks) — is the counterfactual biased anywhere?
+==========================================================================================
+                                   rows    WAPE    BIAS
+segment                                                
+all                             1437322  0.3687 -0.0059
+Lent weeks                       301255  0.3755 -0.0622
+non-Lent weeks                  1136067  0.3668  0.0094
+1-4 weeks after own promo        955308  0.3817  0.0060
+5+ weeks after own promo         482014  0.3484 -0.0243
+competitor promo weight > 0.3    828158  0.3693  0.0087
+competitor promo weight <= 0.3   609164  0.3679 -0.0217
+tier: Cub-Fighter                166740  0.3647  0.0053
+tier: High                       416252  0.3620 -0.0076
+tier: Low                        167187  0.3594 -0.0049
+tier: Medium                     639654  0.3727 -0.0042
+tier: unknown                     47489  0.4281 -0.0523
+BIAS > 0: model over-predicts; < 0: under-predicts. A good counterfactual has small bias everywhere.
+
+==========================================================================================
+4. PLACEBO TEST — fake promotions in the TEST period (true lift = 0)
+==========================================================================================
+Placebo events: 400 product-weeks (>= 30 stores each, no promotion within +-2 weeks)
+count    400.00
+mean       0.51
+std       41.20
+min      -52.95
+5%       -33.88
+25%      -16.25
+50%       -6.50
+75%        6.61
+95%       43.43
+max      446.79
+
+Pooled placebo lift: +1.98%   (should be close to 0)
+Share of placebo events with |lift| > 25%: 21.8%
+Interpretation: the spread of placebo lifts is the noise floor. A real promotion lift
+smaller than this spread cannot be distinguished from noise for a single event.
+
+==========================================================================================
+5. FEATURE IMPORTANCE (permutation, on a TEST sample — drop in R2 when a feature is shuffled)
+==========================================================================================
+BASE_LOG_13            0.4565
+BASE_LOG_52            0.0750
+LAST_REG_LOG           0.0341
+N_OTHER_PROMO          0.0021
+PRICE_INDEX            0.0019
+REG_PRICE              0.0018
+REG_PRICE_PER_OZ       0.0013
+WEEK_OF_YEAR           0.0007
+OTHER_MAX_DEPTH        0.0005
+OTHER_BRAND_PROMO_W    0.0005
+SD_PACK                0.0005
+PROMOS_LAST_13         0.0004
+SAME_BRAND_PROMO_W     0.0004
+WEEKS_SINCE_PROMO      0.0003
+PRODUCT_ID             0.0002
+(SHAP explanations for individual promotions come in the explainability phase.)
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+models\sdr_baseline_model.joblib  (random_forest, refit on weeks <= 277)
+reports\phase5\sdr\model_comparison_validation.csv
+reports\phase5\sdr\figures\actual_vs_baseline_test.png
+reports\phase5\sdr\figures\model_comparison.png
+reports\phase5\sdr\figures\placebo_lift_distribution.png
+
+==========================================================================================
+DONE
+==========================================================================================

@@ -1,0 +1,159 @@
+
+==========================================================================================
+PROMOGUARD AI — PHASE 9 EXPLAINABLE AI + WHAT-IF SIMULATOR — carbonated soft drinks
+==========================================================================================
+Events used: 22,469 (in scope, from Phase 6)
+Target: log(actual / counterfactual units); mean 1.185 (= +227% geometric-mean lift)
+
+==========================================================================================
+1. PROMOTION-RESPONSE MODEL — leave-one-year-out cross-validation
+==========================================================================================
+                               R2_log_lift  MAE_log_lift  median_abs_error_lift_ratio_%
+model                                                                                  
+mean only                           -0.006         0.708                         60.907
+linear, depth only                   0.265         0.575                         48.012
+ridge, all features                  0.447         0.491                         37.321
+gradient boosting (monotonic)        0.531         0.443                         32.750
+
+Out-of-sample residuals (log lift): 10% -0.673, 90% +0.692 -> 80% range for a new promotion: x0.51 to x2.00 of the predicted units
+Monotonic check (deeper discount never lowers predicted lift, all events): True
+
+==========================================================================================
+2. SHAP EXPLANATIONS (Shapley values by permutation sampling)
+==========================================================================================
+SHAP computed on a random sample of 4,000 events (+ the key events below); the model itself uses all events.
+Base value (average prediction): 1.272 = +257% lift
+Local accuracy check: mean |base + sum(SHAP) - prediction| = 0.0350 (sampling noise)
+
+Global importance (mean |SHAP|, log-lift units):
+Discount depth                    0.418
+Package (cans, bottles)           0.222
+Normal sales level (log)          0.172
+Regular price                     0.140
+Same-brand promos (same weeks)    0.062
+Competitor promos (same weeks)    0.052
+Regular price per oz              0.044
+Diet or regular                   0.040
+Brand                             0.040
+Share of stores promoting         0.037
+Stores with a price cut (%)       0.034
+Month                             0.030
+Stores with a deal code (%)       0.025
+Duration (weeks)                  0.024
+Holiday week                      0.014
+Package size (oz)                 0.012
+Weeks since last promotion        0.010
+During Lent                       0.005
+
+Direction of the main effects (mean SHAP by feature range):
+  Discount depth                       low [0.00-0.10]: -0.56 | mid-low [0.10-0.20]: -0.31 | mid-high [0.20-0.32]: -0.03 | high [0.32-0.68]: +0.69
+  Normal sales level (log)             low [-0.32-0.96]: -0.34 | mid-low [0.96-1.63]: -0.06 | mid-high [1.63-2.52]: +0.09 | high [2.52-5.37]: +0.16
+  Regular price                        low [0.21-1.47]: -0.10 | mid-low [1.47-2.59]: -0.11 | mid-high [2.59-4.39]: -0.01 | high [4.39-8.48]: +0.28
+  Same-brand promos (same weeks)       low [1.00-15.00]: +0.09 | mid-low [15.00-30.00]: +0.03 | mid-high [30.00-50.00]: -0.02 | high [50.00-122.00]: -0.09
+  Competitor promos (same weeks)       low [1.00-50.50]: +0.09 | mid-low [50.50-67.00]: +0.00 | mid-high [67.00-91.33]: -0.01 | high [91.33-219.00]: -0.07
+  Package (cans, bottles)              bottle_large: -0.22 | bottle_multipack: -0.34 | can_12pk: -0.01 | can_24pk: +0.35 | can_6pk: +0.19 | single: -0.39 | unknown: +0.19
+
+Reading: values are effects on log lift; +0.69 doubles the lift ratio, -0.69 halves it.
+These describe what the model learned from past events (associations), not separate causal effects.
+  [figure] reports/phase9/sdr/figures/shap_global_importance.png
+  [figure] reports/phase9/sdr/figures/shap_summary.png
+  [figure] reports/phase9/sdr/figures/shap_depth_dependence.png
+  [figure] reports/phase9/sdr/figures/local_explanation_best_gp_event.png
+
+Local explanation — best_gp_event: event 2235 PEPSI-COLA CANS (1996-02-01), measured lift +6574%, model +1491%
+    Normal sales level (log)             = 2.6808595921 -> +0.331
+    Package (cans, bottles)              = can_6pk      -> +0.314
+    Brand                                = PepsiCo      -> +0.255
+    Regular price per oz                 = 0.0414549923 -> +0.253
+    Month                                = 2.0          -> +0.119
+  [figure] reports/phase9/sdr/figures/local_explanation_worst_gp_event.png
+
+Local explanation — worst_gp_event: event 85 PEPSI COLA CANS (1996-11-21), measured lift +4194%, model +3722%
+    Regular price                        = 8.0485508925 -> +0.887
+    Discount depth                       = 0.3822408505 -> +0.600
+    Package (cans, bottles)              = can_24pk     -> +0.361
+    Normal sales level (log)             = 2.8285433326 -> +0.311
+    Duration (weeks)                     = 3            -> +0.094
+  [figure] reports/phase9/sdr/figures/local_explanation_failed_deal_event.png
+
+Local explanation — failed_deal_event: event 2929 PEPSI 20 OZ NR 8PK (1996-07-18), measured lift -77%, model +14%
+    Discount depth                       = 0.0          -> -0.725
+    Package (cans, bottles)              = bottle_multi -> -0.362
+    Normal sales level (log)             = 3.8173429470 -> +0.147
+    Competitor promos (same weeks)       = 115.33333333 -> -0.109
+    Share of stores promoting            = 0.6666666666 -> -0.101
+
+==========================================================================================
+3. WHAT-IF SIMULATOR
+==========================================================================================
+Products available in the simulator: 309 (actively sold at the end of the data, sold in most stores)
+
+Example: PEPSI COLA N/R (product 1200000230), 2-week promotion, not Lent
+Retailer pays the whole discount:
+               scenario  promo_price    units  lift_pct  incremental_units  cannibalized_units  net_gp_impact  net_gp_impact_low  net_gp_impact_high  gp_per_discount_dollar
+           no promotion         1.59 15949.30      0.00               0.00                0.00           0.00               0.00                0.00                     NaN
+deal flag, no price cut         1.59 19476.62     22.12            3527.31              451.75        1119.34           -2153.72             7289.69                     NaN
+                 5% off         1.51 22431.63     40.64            6482.32              830.20         273.76           -2523.77             5599.93                    0.15
+                10% off         1.43 24202.20     51.74            8252.89             1056.96       -1229.21           -3253.56             2596.49                   -0.32
+                15% off         1.35 29360.72     84.09           13411.41             1717.62       -2746.61           -3920.59             -435.79                   -0.39
+                20% off         1.27 30277.92     89.84           14328.62             1835.08       -5081.40           -5101.48            -5092.21                   -0.53
+                25% off         1.19 40801.45    155.82           24852.14             3182.84       -8332.10          -11597.49            -6729.21                   -0.51
+                30% off         1.11 49183.83    208.38           33234.52             4256.38      -12914.19          -20754.04            -9065.81                   -0.55
+                40% off         0.95 88391.86    454.21           72442.55             9277.80      -33228.62          -61349.13           -19425.00                   -0.59
+
+Manufacturer funds 50% of the discount:
+               scenario  promo_price    units  lift_pct  incremental_units  cannibalized_units  net_gp_impact  net_gp_impact_low  net_gp_impact_high  gp_per_discount_dollar
+           no promotion         1.59 15949.30      0.00               0.00                0.00           0.00               0.00                0.00                     NaN
+deal flag, no price cut         1.59 19476.62     22.12            3527.31              451.75        1119.34           -2153.72             7289.69                     NaN
+                 5% off         1.51 22431.63     40.64            6482.32              830.20        1165.42           -2069.08             7381.76                    0.65
+                10% off         1.43 24202.20     51.74            8252.89             1056.96         694.86           -2272.39             6441.44                    0.18
+                15% off         1.35 29360.72     84.09           13411.41             1717.62         754.65           -2135.14             6560.92                    0.11
+                20% off         1.27 30277.92     89.84           14328.62             1835.08        -267.21           -2637.25             4518.90                   -0.03
+                25% off         1.19 40801.45    155.82           24852.14             3182.84        -222.82           -2593.94             4607.61                   -0.01
+                30% off         1.11 49183.83    208.38           33234.52             4256.38       -1183.84           -3084.01             2687.15                   -0.05
+                40% off         0.95 88391.86    454.21           72442.55             9277.80       -5120.01           -5178.63            -5091.23                   -0.09
+  [figure] reports/phase9/sdr/figures/whatif_top_product.png
+
+Best discount per product for gross profit (2 weeks, not Lent), top 12 products by volume:
+           product trade_funding           best_scenario  net_gp_impact  net_gp_at_30%
+    PEPSI COLA N/R            0% deal flag, no price cut         1119.0       -12914.0
+    PEPSI COLA N/R           50%                  5% off         1165.0        -1184.0
+ COCA-COLA CLASSIC            0% deal flag, no price cut         1375.0        -6336.0
+ COCA-COLA CLASSIC           50%                 40% off        13819.0         6796.0
+         DIET COKE            0% deal flag, no price cut          610.0        -4079.0
+         DIET COKE           50%                 40% off         8812.0         4258.0
+      SEVEN-UP N/R            0% deal flag, no price cut          560.0        -5128.0
+      SEVEN-UP N/R           50%                 40% off         3036.0         1611.0
+          DOM COLA            0% deal flag, no price cut           10.0         -169.0
+          DOM COLA           50%                 40% off         1751.0          528.0
+    PEPSI DIET N/R            0% deal flag, no price cut          550.0        -6711.0
+    PEPSI DIET N/R           50%                  5% off          576.0         -746.0
+    DOM CREME SODA            0% deal flag, no price cut           14.0         -236.0
+    DOM CREME SODA           50%                 40% off         2392.0          722.0
+   PEPSI-COLA CANS            0%                  5% off        17055.0         1042.0
+   PEPSI-COLA CANS           50%                 40% off        22286.0        19417.0
+  RC COLA PPD $.99            0% deal flag, no price cut          118.0        -7201.0
+  RC COLA PPD $.99           50% deal flag, no price cut          118.0        -3130.0
+DOM ROOT BEER SODA            0% deal flag, no price cut           12.0         -329.0
+DOM ROOT BEER SODA           50%                 40% off         1784.0          527.0
+    DOM GINGER ALE            0% deal flag, no price cut           15.0         -249.0
+    DOM GINGER ALE           50%                 40% off         2545.0          768.0
+   DOM ORANGE SODA            0% deal flag, no price cut           10.0         -375.0
+   DOM ORANGE SODA           50%                 40% off         1334.0          384.0
+
+Only 7.9% of past events had discounts deeper than 45%: scenarios beyond 45% are
+EXTRAPOLATIONS (flagged in the simulator) and should not drive decisions on their own.
+
+All simulator outputs are MODEL-BASED ESTIMATES with the 80% ranges shown; they assume the
+future behaves like 1989-1997 Dominick's and that the promotion resembles past events.
+
+==========================================================================================
+OUTPUTS
+==========================================================================================
+models/sdr_promo_response_model.joblib
+data/processed/sdr_event_shap.csv
+data/processed/sdr_simulator_products.csv
+
+==========================================================================================
+DONE
+==========================================================================================
