@@ -2,7 +2,10 @@
 PromoGuard AI — Phase 10: personalized discounts by customer group.
 
 Location: src/analysis/10_customer_groups.py
-Run from the repo root:  python src/analysis/10_customer_groups.py
+Run from the repo root:  python src/analysis/10_customer_groups.py              # canned tuna
+                         python src/analysis/10_customer_groups.py --cat sdr    # soft drinks
+Soft drinks reuse the SAME store groups as tuna (data/processed/tna_store_groups.csv): the groups come
+from census data, so they do not depend on the product. Run tuna first.
 Needs: data/raw/dominicks/demo/demo.dta (Kilts Center "demo(stata).zip", unzipped or zipped)
        Phase 6 rows and Phase 9 model.
 
@@ -29,13 +32,14 @@ Steps
        Compared with ONE chain-wide depth -> value of personalization.
 
 Outputs
-    data/processed/tna_store_groups.csv
-    reports/phase10/group_profiles.csv, group_response.csv, group_lift_by_depth.csv,
-    personalized_discounts.csv, phase10_report.txt
+    data/processed/<cat>_store_groups.csv
+    reports/phase10/ (tuna) or reports/phase10/sdr/ (soft drinks): group_profiles.csv, group_response.csv,
+    group_lift_by_depth.csv, personalized_discounts.csv, phase10_report.txt
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 import zipfile
 from pathlib import Path
@@ -48,7 +52,7 @@ from sklearn.preprocessing import StandardScaler
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-from src.simulation.whatif import EXTRAPOLATION_DEPTH, PromoSimulator  # noqa: E402
+from src.simulation.whatif import PromoSimulator  # noqa: E402
 
 RAW = REPO_ROOT / "data" / "raw" / "dominicks" / "demo"
 PROC = REPO_ROOT / "data" / "processed"
@@ -145,7 +149,7 @@ def response_model(se: pd.DataFrame, ref: str) -> tuple[pd.Series, pd.DataFrame,
     coef = pd.Series(np.linalg.lstsq(Xv, yv, rcond=None)[0], X.columns)
     rng = np.random.default_rng(SEED)
     events = ev.unique()
-    idx = {e: np.flatnonzero(ev.to_numpy() == e) for e in events}
+    idx = ev.reset_index(drop=True).groupby(ev.to_numpy()).indices        # event -> row positions (fast)
     boot = []
     for _ in range(N_BOOT):
         ii = np.concatenate([idx[e] for e in rng.choice(events, len(events))])
@@ -193,6 +197,7 @@ def group_price_volume(rows: pd.DataFrame, groups: pd.DataFrame, products: list[
 
 
 def personalize(sim: PromoSimulator, mult: pd.DataFrame, pv: pd.DataFrame) -> pd.DataFrame:
+    xdepth = sim.extrapolation_depth
     m = mult.set_index(["GROUP", "DEPTH"])["MULTIPLIER"]
     out = []
     for pid, p in sim.products.iterrows():
@@ -212,7 +217,7 @@ def personalize(sim: PromoSimulator, mult: pd.DataFrame, pv: pd.DataFrame) -> pd
             out.append({"PRODUCT_ID": pid, "DESCRIP": str(p["DESCRIP"]).strip().lstrip("$~ "), "BRAND": p["BRAND"],
                         "SIZE": p["SIZE"], "GROUP": g, "STORES": int(row["STORES"]),
                         "REG_PRICE": price, "BEST_DEPTH": best if res[best] > 0 else 0.0,
-                        "BEST_GP": max(res[best], 0.0), "EXTRAPOLATION": bool(best > EXTRAPOLATION_DEPTH and res[best] > 0),
+                        "BEST_GP": max(res[best], 0.0), "EXTRAPOLATION": bool(best > xdepth and res[best] > 0),
                         **{f"GP_{int(d * 100)}": v for d, v in res.items()}})
         # one chain-wide depth = best depth for the sum over groups
         if uniform:
@@ -225,19 +230,44 @@ def personalize(sim: PromoSimulator, mult: pd.DataFrame, pv: pd.DataFrame) -> pd
 
 
 # ----------------------------------------------------------------------------
+def reuse_groups(path: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
+    """Soft drinks: the same census store groups as tuna (groups do not depend on the product)."""
+    x = pd.read_csv(path).rename(columns={"STORE": "store"})
+    prof = x.groupby("GROUP")[FEATURES].mean()
+    prof["income"] = np.exp(prof["income"])
+    prof.insert(0, "stores", x.groupby("GROUP").size())
+    return x, prof, {"k": x["GROUP"].nunique(), "silhouette": None}
+
+
 def main() -> None:
+    global OUT
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--cat", default="tna", choices=["tna", "sdr"])
+    cat = ap.parse_args().cat
+    if cat != "tna":
+        OUT = OUT / cat
     OUT.mkdir(parents=True, exist_ok=True)
-    print("Loading data …")
-    rows = pd.read_parquet(PROC / "tna_counterfactual_rows.parquet",
+    print(f"Loading data ({'canned tuna' if cat == 'tna' else 'soft drinks'}) …")
+    rows = pd.read_parquet(PROC / f"{cat}_counterfactual_rows.parquet",
                            columns=["PRODUCT_ID", "STORE", "WEEK", "MOVE", "REG_PRICE", "DEPTH", "PHASE",
                                     "EVENT_ID", "PRED_CF"])
-    demo = load_demo()
-    groups, prof, info = make_groups(demo, set(rows["STORE"].unique()))
+    if cat == "tna":
+        demo = load_demo()
+        groups, prof, info = make_groups(demo, set(rows["STORE"].unique()))
+        groups = groups.copy()
+    else:
+        src = PROC / "tna_store_groups.csv"
+        if not src.exists():
+            sys.exit("Run tuna first:  python src/analysis/10_customer_groups.py   (it creates the store groups)")
+        groups, prof, info = reuse_groups(src)
     groups[["store", "name", "city", "zone", "lat", "lon", "GROUP_ID", "GROUP"] + FEATURES].rename(
-        columns={"store": "STORE"}).to_csv(PROC / "tna_store_groups.csv", index=False)
+        columns={"store": "STORE"}).to_csv(PROC / f"{cat}_store_groups.csv", index=False)
     prof.round(4).to_csv(OUT / "group_profiles.csv")
-    print(f"  {len(groups)} stores with demographics, k = {info['k']} groups "
-          f"(silhouette {', '.join(f'{k}: {v:.3f}' for k, v in info['silhouette'].items())})")
+    if info["silhouette"]:
+        print(f"  {len(groups)} stores with demographics, k = {info['k']} groups "
+              f"(silhouette {', '.join(f'{k}: {v:.3f}' for k, v in info['silhouette'].items())})")
+    else:
+        print(f"  {len(groups)} stores, {info['k']} groups (same store groups as canned tuna)")
 
     print("Promotion response by group (within-promotion, event fixed effects, bootstrap) …")
     se = store_event_table(rows, groups)
@@ -255,16 +285,18 @@ def main() -> None:
     lift.round(2).to_csv(OUT / "group_lift_by_depth.csv", index=False)
 
     print("Personalized discount per product and group …")
-    sim = PromoSimulator.load()
+    sim = PromoSimulator.load(cat=cat)
     pv = group_price_volume(rows, groups, list(sim.products.index))
     pers = personalize(sim, mult, pv)
     pers.round(4).to_csv(OUT / "personalized_discounts.csv", index=False)
 
     # ---- report ----
     gain = pers.groupby("PRODUCT_ID")[["BEST_GP", "UNIFORM_GP"]].sum()
-    lines = ["PHASE 10 — PERSONALIZED DISCOUNTS BY CUSTOMER GROUP", "=" * 55,
-             f"Stores with demographics: {len(groups)} · groups: {info['k']} (k-means, best silhouette "
-             f"{info['silhouette'][info['k']]:.3f})", "Variables: " + ", ".join(FEATURES) +
+    how = (f"k-means, best silhouette {info['silhouette'][info['k']]:.3f}" if info["silhouette"]
+           else "same store groups as canned tuna")
+    lines = ["PHASE 10 — PERSONALIZED DISCOUNTS BY CUSTOMER GROUP — "
+             + ("canned tuna" if cat == "tna" else "carbonated soft drinks"), "=" * 55,
+             f"Stores with demographics: {len(groups)} · groups: {info['k']} ({how})", "Variables: " + ", ".join(FEATURES) +
              "  (ethnicity deliberately excluded)", "", "GROUP PROFILES (means; income = median $)",
              prof.round(3).to_string(), "",
              f"RESPONSE MULTIPLIER vs chain average (1.00 = average; within-promotion, {N_BOOT} bootstrap draws)",

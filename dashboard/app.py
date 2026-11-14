@@ -925,8 +925,12 @@ GROUP_COLORS = {"Affluent professionals": BLUE, "Older, budget-conscious": ORANG
 
 
 @st.cache_data
+def _groups_data(cat: str):
+    return D.load_groups(cat)
+
+
 def groups_data():
-    return D.load_groups()
+    return _groups_data(D.CAT)
 
 
 def store_map(stores: pd.DataFrame, where) -> None:
@@ -952,16 +956,13 @@ def page_groups() -> None:
     T.hero("Personalized discounts by customer group", "Stores are grouped by the customers who live around them "
            "(1990 census). For each group: how strongly it reacts to discounts, which products to promote and "
            "where promotions pay most.", "Customer groups", "causal",
-           ["4 customer groups", "83 stores", "no individual customer data"])
-    if D.CAT != "tna":
-        T.callout(f"<b>Customer groups were built for canned tuna.</b> Switch the product category in the sidebar to "
-                  f"<b>Canned tuna</b> to see them. (The personalized plan was computed for tuna only.)", "muted")
-        return
+           [CATNAME(), "same 4 store groups for every product", "no individual customer data"])
     gd = groups_data()
     if gd is None:
-        T.empty_state("Customer groups not computed yet", "Download <b>demo(stata).zip</b> from the Kilts Center into "
-                      "<code>data/raw/dominicks/demo/</code>, then run <code>python src/analysis/10_customer_groups.py"
-                      "</code>.")
+        cmd = "python src/analysis/10_customer_groups.py" + ("" if D.CAT == "tna" else " --cat sdr")
+        T.empty_state("Customer groups not computed yet for this category", "Download <b>demo(stata).zip</b> from "
+                      "the Kilts Center into <code>data/raw/dominicks/demo/</code>, run the tuna version first, then "
+                      f"<code>{cmd}</code>.")
         return
     prof, resp, plan, stores_ = gd["profiles"], gd["response"], gd["plan"], gd["stores"]
     plan = plan.assign(GP_PER_STORE=plan["BEST_GP"] / plan["STORES"])
@@ -975,13 +976,22 @@ def page_groups() -> None:
                      "warn" if m15.get(g, 1) > 1.02 else ("neutral" if m15.get(g, 1) > 0.98 else "muted"))
                for g in order])
     uni, per = plan.groupby("PRODUCT_ID")[["UNIFORM_GP", "BEST_GP"]].sum().sum()
-    top_g = best_store.idxmax()
-    low_g = best_store.idxmin()
-    T.callout(f"<b>Personalize WHERE and WHAT, not HOW MUCH.</b> The best discount is about 15% in every group "
-              f"(personalizing the depth adds only {(per / uni - 1) * 100:+.1f}% gross profit). But the same "
-              f"promotion earns <b>${best_store[top_g]:,.0f} per store</b> in <b>{T.esc(top_g)}</b> stores vs "
-              f"${best_store[low_g]:,.0f} in {T.esc(low_g)} stores, and each group prefers different products.",
-              "neutral")
+    if best_store.empty:
+        T.callout(f"<b>No discount pays in any group when the store pays the whole discount.</b> For {CATNAME().lower()} "
+                  "the margin is too thin: every depth from 5% to 40% loses gross profit in every customer group. "
+                  "The groups still differ in <b>how strongly they react</b> (tab 2): use that to choose WHERE to run "
+                  "supplier-funded promotions.", "warn")
+    else:
+        top_g, low_g = best_store.idxmax(), best_store.idxmin()
+        pos = plan[plan["BEST_GP"] > 0]
+        mode_d = pos.groupby("GROUP")["BEST_DEPTH"].agg(lambda s_: s_.mode().iloc[0]) * 100
+        depth_txt = (f"about {mode_d.iloc[0]:.0f}% in every group" if mode_d.nunique() == 1
+                     else "between " + f"{mode_d.min():.0f}% and {mode_d.max():.0f}% depending on the group")
+        T.callout(f"<b>Personalize WHERE and WHAT, not HOW MUCH.</b> The most common best discount is {depth_txt} "
+                  f"(personalizing the depth adds {(per / max(uni, 1) - 1) * 100:+.1f}% gross profit). The same "
+                  f"promotion earns <b>${best_store[top_g]:,.0f} per store</b> in <b>{T.esc(top_g)}</b> stores vs "
+                  f"${best_store[low_g]:,.0f} in {T.esc(low_g)} stores, and each group prefers different products.",
+                  "neutral")
 
     t1, t2, t3, t4 = st.tabs(["Who are the groups", "Who reacts to discounts", "Recommended plan by group",
                               "Where to promote"])
@@ -1044,7 +1054,7 @@ def page_groups() -> None:
     t3.caption("Simulation: Phase 9 product response × this group's sensitivity, this group's regular price and "
                "sales volume; retailer pays the discount. 0% = better not to promote here.")
 
-    b = best_store.reindex(order)
+    b = best_store.reindex(order).fillna(0)
     fig = go.Figure(go.Bar(x=b.index, y=b.values, marker_color=[GROUP_COLORS.get(g, GREY) for g in b.index],
                            text=[f"${v:,.0f}" for v in b.values], textposition="outside", cliponaxis=False))
     fig.update_yaxes(title="Gross profit per store, best promotion")

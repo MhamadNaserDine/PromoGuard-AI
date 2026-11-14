@@ -278,20 +278,26 @@ def shap_global(shap: pd.DataFrame) -> pd.Series:
 # ----------------------------------------------------------------------------
 # Phase 10 — customer groups (optional: the page shows a setup message if missing)
 # ----------------------------------------------------------------------------
-GROUP_FILES = {"stores": PROC / "tna_store_groups.csv", "profiles": REPORTS / "phase10" / "group_profiles.csv",
-               "response": REPORTS / "phase10" / "group_response.csv",
-               "lift": REPORTS / "phase10" / "group_lift_by_depth.csv",
-               "plan": REPORTS / "phase10" / "personalized_discounts.csv"}
+def group_files(cat: str | None = None) -> dict:
+    c = cat or CAT
+    d = _report_dir(10, c)
+    return {"stores": PROC / f"{c}_store_groups.csv", "profiles": d / "group_profiles.csv",
+            "response": d / "group_response.csv", "lift": d / "group_lift_by_depth.csv",
+            "plan": d / "personalized_discounts.csv"}
+
+
+GROUP_FILES = group_files("tna")
 
 
 def load_groups(cat: str | None = None) -> dict | None:
-    """Customer groups were computed for canned tuna only (Phase 10)."""
-    if (cat or CAT) != "tna" or not all(p.exists() for p in GROUP_FILES.values()):
+    """Phase 10 customer groups for a category (same census store groups, category-specific response/plan)."""
+    files = group_files(cat)
+    if not all(p.exists() for p in files.values()):
         return None
-    out = {k: pd.read_csv(p) for k, p in GROUP_FILES.items()}
+    out = {k: pd.read_csv(p) for k, p in files.items()}
     out["profiles"] = out["profiles"].set_index("GROUP")
     out["plan"]["DESCRIP"] = clean_name(out["plan"]["DESCRIP"])
-    out["plan"] = add_readable_names(out["plan"], cat="tna")
+    out["plan"] = add_readable_names(out["plan"], cat=cat or CAT)
     return out
 
 

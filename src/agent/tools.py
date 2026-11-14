@@ -342,20 +342,31 @@ def lift_drivers(category: str = "tuna") -> dict:
             "importance": [{"factor": LABELS.get(k, k), "mean_abs_shap": _r(v, 3)} for k, v in g.head(10).items()]}
 
 
-def customer_groups() -> dict:
+def customer_groups(category: str = "tuna") -> dict:
     """Store customer groups (from census demographics) and how strongly each reacts to discounts."""
-    gd = D.load_groups(cat=AGENT_CAT)
+    c = _code(category)
+    gd = D.load_groups(cat=c)
     if gd is None:
-        return {"error": "customer groups not computed: run src/analysis/10_customer_groups.py"}
+        return {"error": f"customer groups not computed for {category}: run src/analysis/10_customer_groups.py"
+                         + ("" if c == "tna" else " --cat sdr")}
     prof = gd["profiles"].reset_index()
     resp = gd["response"]
     r = resp[resp["DEPTH"].round(2).isin([0.10, 0.15, 0.25])].copy()
     r["extra_sales_vs_average_pct"] = (r["MULTIPLIER"] - 1) * 100
     r["range90_pct"] = [[_r((lo - 1) * 100, 1), _r((hi - 1) * 100, 1)] for lo, hi in zip(r["MULT_LO90"], r["MULT_HI90"])]
     plan = gd["plan"]
-    per_store = plan[plan["BEST_GP"] > 0].assign(v=lambda t: t["BEST_GP"] / t["STORES"]).groupby("GROUP")["v"].max()
+    pos = plan[plan["BEST_GP"] > 0]
+    per_store = pos.assign(v=lambda t: t["BEST_GP"] / t["STORES"]).groupby("GROUP")["v"].max()
+    if pos.empty:
+        finding = ("no discount from 5% to 40% is profitable in any group when the retailer pays the whole discount; "
+                   "groups differ only in how strongly they react")
+    else:
+        modes = (pos.groupby("GROUP")["BEST_DEPTH"].agg(lambda s_: s_.mode().iloc[0]) * 100).round().astype(int)
+        finding = (f"most common best discount by group: {modes.to_dict()} %; personalization matters most for WHERE "
+                   "(profit per store) and WHAT (which products)")
     return {"provenance": "causal estimate of promotion response (within-promotion comparison) + census "
                           "demographics; store groups, not individual customers; ethnicity not used",
+            "category": category,
             "profiles": _records(prof.rename(columns={"income": "median_income_usd", "educ": "share_college",
                                                       "age60": "share_age60plus", "hsizeavg": "household_size",
                                                       "poverty": "share_income_under_15k", "workwom": "share_working_women",
@@ -364,15 +375,16 @@ def customer_groups() -> dict:
                                                      "SIGNIFICANT"]].rename(columns={"GROUP": "group",
                                                                                      "DEPTH": "discount"}), 3),
             "best_promotion_gross_profit_per_store_usd": {k: _r(v, 0) for k, v in per_store.items()},
-            "key_finding": "best discount is about 15% in every group; personalization matters most for WHERE "
-                           "(profit per store) and WHAT (which products), not HOW MUCH"}
+            "key_finding": finding}
 
 
-def personalized_plan(group: str, product_id: int | None = None, top: int = 5) -> dict:
+def personalized_plan(group: str, product_id: int | None = None, top: int = 5, category: str = "tuna") -> dict:
     """Recommended products and discount for one customer group (2-week promotion, retailer pays)."""
-    gd = D.load_groups(cat=AGENT_CAT)
+    c = _code(category)
+    gd = D.load_groups(cat=c)
     if gd is None:
-        return {"error": "customer groups not computed: run src/analysis/10_customer_groups.py"}
+        return {"error": f"customer groups not computed for {category}: run src/analysis/10_customer_groups.py"
+                         + ("" if c == "tna" else " --cat sdr")}
     plan = gd["plan"]
     names = sorted(plan["GROUP"].unique())
     match = [g for g in names if group.lower() in g.lower()] or [g for g in names if
@@ -387,7 +399,7 @@ def personalized_plan(group: str, product_id: int | None = None, top: int = 5) -
     p["chain_wide_best_pct"] = p["UNIFORM_DEPTH"] * 100
     p["gp_per_store_usd"] = p["BEST_GP"] / p["STORES"]
     return {"provenance": "simulation (Phase 9 product response x group sensitivity, group price and volume)",
-            "group": match[0], "products": _records(p[["PRODUCT_ID", "DESCRIP", "BRAND", "SIZE", "STORES",
+            "category": category, "group": match[0], "products": _records(p[["PRODUCT_ID", "DESCRIP", "BRAND", "SIZE", "STORES",
                                                        "REG_PRICE", "best_discount_pct", "BEST_GP",
                                                        "gp_per_store_usd", "chain_wide_best_pct", "EXTRAPOLATION"]]
                                                     .rename(columns={"BEST_GP": "gross_profit_2wk_usd"}), 2),
@@ -507,14 +519,13 @@ TOOLS = {
                            "does not lose gross profit.",
                            _with_cat(_schema({"product_id": PID, "discount_pct": DISC, "weeks": WEEKS, "lent": LENT},
                                              ["product_id", "discount_pct"]))),
-    "customer_groups": (customer_groups, "CANNED TUNA ONLY. The 4 store customer groups (income, age, family "
-                        "size…), how strongly each reacts to discounts, and where promotions pay most per store.",
-                        _schema()),
-    "personalized_plan": (personalized_plan, "CANNED TUNA ONLY. Recommended products and discount for one customer "
-                          "group, e.g. "
+    "customer_groups": (customer_groups, "The 4 store customer groups (income, age, family size…), how strongly "
+                        "each reacts to discounts, and where promotions pay most per store (per category).",
+                        _with_cat(_schema())),
+    "personalized_plan": (personalized_plan, "Recommended products and discount for one customer group, e.g. "
                           "'Young families', 'Affluent professionals', 'Older, budget-conscious', 'Urban low-income'.",
-                          _schema({"group": {"type": "string"}, "product_id": {"type": "integer"},
-                                   "top": {"type": "integer", "minimum": 1, "maximum": 15}}, ["group"])),
+                          _with_cat(_schema({"group": {"type": "string"}, "product_id": {"type": "integer"},
+                                             "top": {"type": "integer", "minimum": 1, "maximum": 15}}, ["group"]))),
     "lift_drivers": (lift_drivers, "Which factors drive promotion lift most (SHAP importance).", _with_cat(_schema())),
     "compare_categories": (compare_categories, "Side-by-side results of canned tuna vs soft drinks (lift, "
                            "cannibalization, profit, by discount depth). Use for any cross-category question.",

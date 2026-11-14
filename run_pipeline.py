@@ -5,7 +5,7 @@ Location: run_pipeline.py (repo root)
 
 Usage (from the repo root, with the same Python you use for the dashboard):
     python run_pipeline.py                      # canned tuna, all phases (1-10)
-    python run_pipeline.py --cat sdr            # carbonated soft drinks, phases 1-9
+    python run_pipeline.py --cat sdr            # carbonated soft drinks, phases 1-10
     python run_pipeline.py --cat all            # both categories
     python run_pipeline.py --cat sdr --from 5   # start at phase 5 (earlier outputs already exist)
     python run_pipeline.py --cat tna --only 9   # one phase only
@@ -40,7 +40,7 @@ PHASES = [
     (7, "src/analysis/07_cannibalization.py", "Cannibalization (fixed effects + IV)", ("tna", "sdr")),
     (8, "src/analysis/08_profit_impact.py", "Gross-profit impact (two cost views)", ("tna", "sdr")),
     (9, "src/models/09_explain_and_simulate.py", "Response model, SHAP, what-if simulator", ("tna", "sdr")),
-    (10, "src/analysis/10_customer_groups.py", "Store customer groups (census) — tuna only", ("tna",)),
+    (10, "src/analysis/10_customer_groups.py", "Store customer groups (census) + personal plan", ("tna", "sdr")),
 ]
 CAT_NAMES = {"tna": "canned tuna", "sdr": "carbonated soft drinks"}
 RAW_FILES = {"tna": ["upctna.csv", "wtna.zip"], "sdr": ["upcsdr.csv", "wsdr.zip"]}
@@ -89,7 +89,7 @@ def main() -> None:
         for n, script, desc, applies in PHASES:
             if not (start <= n <= end) or cat not in applies:
                 continue
-            cmd = [sys.executable, script] + (["--cat", cat] if n != 10 else [])
+            cmd = [sys.executable, script, "--cat", cat]
             t0 = time.time()
             code = run(cmd)
             dt = time.time() - t0

@@ -41,7 +41,8 @@ Rules
   Bumble Bee, Chicken of the Sea, tuna = tuna) and pass it to every tool. If the question does not say,
   use tuna and say so in one short phrase. For questions about both, use compare_categories.
 - For simulations, first find the product_id with list_products in the same category (names are abbreviated).
-- Customer groups (customer_groups, personalized_plan) exist for canned tuna only.
+- Customer groups (customer_groups, personalized_plan) are the same 4 store groups for both categories;
+  pass the category like for the other tools.
 - Say what kind of number you give: observed data, causal estimate (under stated assumptions),
   model estimate, or simulation (not a guarantee).
 - Profit means GROSS profit (margin on average acquisition cost), never net profit.

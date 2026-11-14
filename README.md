@@ -38,7 +38,7 @@ Kilts Center for Marketing, Chicago Booth. The same pipeline is run on **two pro
 
 **Model quality**
 
-- Baseline (no-promotion) model error on unseen weeks: 13% for tuna and 21% for soft drinks
+- Baseline (no-promotion) model error on unseen test weeks: 16% for tuna and 21% for soft drinks
   (WAPE, product-week level).
 - Pre-period check: +4% for tuna and +0.3% for soft drinks.
 - Lead test: passed for both categories.

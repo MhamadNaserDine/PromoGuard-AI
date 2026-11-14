@@ -131,6 +131,13 @@ section[data-testid="stSidebar"] [data-baseweb="tag"] span { color: #1d5aa3 !imp
     border-radius: 14px; padding: .35rem; }
 [data-testid="stVerticalBlockBorderWrapper"] { border-radius: 14px; }
 .stDownloadButton button, .stButton button { border-radius: 10px; font-weight: 600; }
+/* pointer (hand) cursor on every clickable control */
+div[data-baseweb="select"], div[data-baseweb="select"] *, div[data-baseweb="popover"] li,
+[role="option"], [role="listbox"] *, [data-testid="stSelectbox"] input,
+[data-testid="stMultiSelect"] input, [role="slider"], [data-baseweb="slider"] *,
+[data-testid="stRadio"] label, [data-testid="stCheckbox"] label, [data-testid="stToggle"] label,
+[data-baseweb="tab"], button, [data-testid="stPills"] button, [data-testid="stSegmentedControl"] button,
+[data-testid="stExpander"] summary, a { cursor: pointer !important; }
 </style>
 """
 
